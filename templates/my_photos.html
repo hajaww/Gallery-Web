@@ -1,0 +1,209 @@
+{% extends "base.html" %} {% block title %}Foto Saya - Galeri Foto{% endblock %}
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+  <!-- Header -->
+  <div
+    class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8"
+  >
+    <div>
+      <h1 class="text-2xl font-bold text-gray-900">Foto Saya</h1>
+      <p class="text-gray-500">
+        Halo, {{ current_user.name }}. Mari kurasi momen terbaikmu.
+      </p>
+    </div>
+    <a
+      href="{{ url_for('upload') }}"
+      class="mt-4 md:mt-0 inline-flex items-center space-x-2 bg-indigo-600 text-white px-6 py-3 rounded-full hover:bg-indigo-700 transition font-medium"
+    >
+      <span class="material-icons-round text-sm">add_a_photo</span>
+      <span>Upload Foto Baru</span>
+    </a>
+  </div>
+
+  <!-- Stats Cards -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <div class="bg-white rounded-xl shadow-md p-6 flex items-center space-x-4">
+      <div
+        class="w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center"
+      >
+        <span class="material-icons-round text-indigo-600">photo_library</span>
+      </div>
+      <div>
+        <p class="text-2xl font-bold text-gray-900">{{ photos|length }}</p>
+        <p class="text-gray-500 text-sm">Total Foto</p>
+      </div>
+    </div>
+    <div class="bg-white rounded-xl shadow-md p-6 flex items-center space-x-4">
+      <div
+        class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center"
+      >
+        <span class="material-icons-round text-red-600">favorite</span>
+      </div>
+      <div>
+        <p class="text-2xl font-bold text-gray-900">{{ total_likes }}</p>
+        <p class="text-gray-500 text-sm">Total Like</p>
+      </div>
+    </div>
+    <div class="bg-white rounded-xl shadow-md p-6 flex items-center space-x-4">
+      <div
+        class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center"
+      >
+        <span class="material-icons-round text-blue-600">visibility</span>
+      </div>
+      <div>
+        <p class="text-2xl font-bold text-gray-900">-</p>
+        <p class="text-gray-500 text-sm">Total Views</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="bg-white rounded-xl shadow-md overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr>
+            <th
+              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+            >
+              Thumbnail
+            </th>
+            <th
+              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+            >
+              Judul
+            </th>
+            <th
+              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+            >
+              Deskripsi
+            </th>
+            <th
+              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+            >
+              Like
+            </th>
+            <th
+              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+            >
+              Tanggal
+            </th>
+            <th
+              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+            >
+              Aksi
+            </th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          {% for photo in photos %}
+          <tr class="hover:bg-gray-50">
+            <td class="px-6 py-4">
+              <img
+                src="{{ url_for('static', filename='uploads/' + photo.image_file) }}"
+                alt="{{ photo.title }}"
+                class="w-16 h-16 object-cover rounded-lg"
+              />
+            </td>
+            <td class="px-6 py-4">
+              <p class="font-semibold text-gray-900">{{ photo.title }}</p>
+            </td>
+            <td class="px-6 py-4">
+              <p class="text-gray-600 text-sm truncate max-w-xs">
+                {{ photo.description }}
+              </p>
+            </td>
+            <td class="px-6 py-4">
+              <div class="flex items-center space-x-1 text-red-500">
+                <span class="material-icons-round text-sm">favorite</span>
+                <span class="font-medium">{{ photo.likes_count }}</span>
+              </div>
+            </td>
+            <td class="px-6 py-4">
+              <p class="text-gray-600 text-sm">
+                {{ photo.created_at.strftime('%d %b %Y') }}
+              </p>
+            </td>
+            <td class="px-6 py-4">
+              <div class="flex space-x-2">
+                <a
+                  href="{{ url_for('edit_photo', photo_id=photo.id) }}"
+                  class="text-blue-600 hover:text-blue-800"
+                >
+                  <span class="material-icons-round text-sm">edit</span>
+                </a>
+                <form
+                  method="POST"
+                  action="{{ url_for('delete_photo', photo_id=photo.id) }}"
+                  class="inline"
+                  onsubmit="return confirm('Yakin ingin menghapus foto ini?');"
+                >
+                  <input
+                    type="hidden"
+                    name="csrf_token"
+                    value="{{ csrf_token() }}"
+                  />
+                  <button type="submit" class="text-red-600 hover:text-red-800">
+                    <span class="material-icons-round text-sm">delete</span>
+                  </button>
+                </form>
+              </div>
+            </td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="6" class="px-6 py-12 text-center">
+              <span class="material-icons-round text-6xl text-gray-300"
+                >add_a_photo</span
+              >
+              <p class="text-gray-500 mt-4">Belum ada foto, upload sekarang!</p>
+              <a
+                href="{{ url_for('upload') }}"
+                class="inline-block mt-4 bg-indigo-600 text-white px-6 py-2 rounded-full hover:bg-indigo-700"
+                >Upload Foto</a
+              >
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination Controls -->
+    {% if pagination.pages > 1 %}
+    <div class="flex justify-center items-center gap-2 py-4">
+      {% if pagination.has_prev %}
+      <a
+        href="{{ url_for('my_photos', page=pagination.prev_num) }}"
+        class="px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition"
+      >
+        <span class="material-icons-round text-sm">chevron_left</span>
+      </a>
+      {% endif %} {% for page_num in pagination.iter_pages(left_edge=1,
+      right_edge=1, left_current=2, right_current=2) %} {% if page_num %} {% if
+      page_num == pagination.page %}
+      <span class="px-4 py-2 bg-indigo-600 text-white rounded-lg font-medium">
+        {{ page_num }}
+      </span>
+      {% else %}
+      <a
+        href="{{ url_for('my_photos', page=page_num) }}"
+        class="px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition"
+      >
+        {{ page_num }}
+      </a>
+      {% endif %} {% else %}
+      <span class="px-2 text-gray-400">...</span>
+      {% endif %} {% endfor %} {% if pagination.has_next %}
+      <a
+        href="{{ url_for('my_photos', page=pagination.next_num) }}"
+        class="px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition"
+      >
+        <span class="material-icons-round text-sm">chevron_right</span>
+      </a>
+      {% endif %}
+    </div>
+    {% endif %}
+  </div>
+  {% endblock %}
+</div>

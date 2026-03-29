@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block title %}Upload Foto - Galeri Foto{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="bg-white rounded-2xl shadow-xl p-8">
+        <div class="text-center mb-8">
+            <h1 class="text-2xl font-bold text-gray-800 mb-2">
+                {% if photo %}Edit Foto{% else %}Upload Foto Baru{% endif %}
+            </h1>
+            <p class="text-gray-500">Bagikan visi visual Anda dengan dunia</p>
+        </div>
+        
+        <form method="POST" action="{{ url_for('edit_photo', photo_id=photo.id) if photo else url_for('upload') }}" 
+              enctype="multipart/form-data" class="space-y-6">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+            
+            <!-- Upload Area -->
+            <div class="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:border-indigo-500 transition-colors" id="dropZone">
+                <input type="file" name="photo" id="photoInput" accept=".jpg,.jpeg,.png,.webp" 
+                       class="hidden" {% if not photo %}required{% endif %} onchange="previewImage(this)">
+                <label for="photoInput" class="cursor-pointer">
+                    <span class="material-icons-round text-5xl text-gray-400 mb-4">cloud_upload</span>
+                    <p class="text-gray-700 font-medium mb-2">Drag & drop foto atau klik untuk browse</p>
+                    <p class="text-gray-500 text-sm">Supported: .jpg, .png, .webp (Max 16MB)</p>
+                </label>
+                {% if photo %}
+                <div class="mt-4">
+                    <img src="{{ url_for('static', filename='uploads/' + photo.image_file) }}" 
+                         alt="Current Photo" class="max-h-48 mx-auto rounded-lg shadow-md">
+                    <p class="text-sm text-gray-500 mt-2">Klik untuk ganti foto</p>
+                </div>
+                {% else %}
+                <div id="imagePreview" class="hidden mt-4">
+                    <img id="previewImg" src="" alt="Preview" class="max-h-48 mx-auto rounded-lg shadow-md">
+                    <button type="button" onclick="clearPreview()" class="mt-2 text-red-600 text-sm hover:underline">
+                        <span class="material-icons-round text-sm">close</span> Hapus
+                    </button>
+                </div>
+                {% endif %}
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Judul Foto</label>
+                <input type="text" name="title" required 
+                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                       placeholder="Contoh: Sunset di Pantai" 
+                       value="{{ photo.title if photo else request.form.get('title', '') }}">
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Deskripsi</label>
+                <textarea name="description" rows="4" 
+                          class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                          placeholder="Ceritakan tentang foto ini...">{{ photo.description if photo else request.form.get('description', '') }}</textarea>
+            </div>
+            
+            <div class="flex space-x-4">
+                <a href="{{ url_for('my_photos') }}" class="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-lg font-semibold hover:bg-gray-50 text-center">
+                    Batal
+                </a>
+                <button type="submit" class="flex-1 px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg font-semibold hover:from-indigo-700 hover:to-purple-700">
+                    {{ 'Update Foto' if photo else 'Upload Foto' }}
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function previewImage(input) {
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('previewImg').src = e.target.result;
+            document.getElementById('imagePreview').classList.remove('hidden');
+        }
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
+function clearPreview() {
+    document.getElementById('photoInput').value = '';
+    document.getElementById('imagePreview').classList.add('hidden');
+}
+</script>
+{% endblock %}

@@ -1,0 +1,201 @@
+{% extends "base.html" %} {% block title %}Daftar - Galeri Foto{% endblock %} {%
+block content %}
+<div
+  class="min-h-[80vh] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8"
+>
+  <div class="max-w-md w-full bg-white rounded-2xl shadow-xl p-8">
+    <!-- Logo -->
+    <div class="text-center mb-8">
+      <div class="flex justify-center mb-4">
+        <span class="material-icons-round text-5xl text-indigo-600"
+          >photo_camera</span
+        >
+      </div>
+      <h2 class="text-2xl font-bold text-gray-800">Galeri Foto</h2>
+      <p class="text-gray-500 text-sm">The Digital Curator</p>
+    </div>
+
+    <!-- Form -->
+    <form method="POST" action="{{ url_for('register') }}" class="space-y-5">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2"
+          >Nama Lengkap</label
+        >
+        <div class="relative">
+          <span
+            class="material-icons-round absolute left-3 top-3 text-gray-400 text-sm"
+            >person</span
+          >
+          <input
+            type="text"
+            name="name"
+            required
+            class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+            placeholder="John Doe"
+            value="{{ request.form.get('name', '') }}"
+          />
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2"
+          >Email</label
+        >
+        <div class="relative">
+          <span
+            class="material-icons-round absolute left-3 top-3 text-gray-400 text-sm"
+            >mail</span
+          >
+          <input
+            type="email"
+            name="email"
+            required
+            class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+            placeholder="nama@email.com"
+            value="{{ request.form.get('email', '') }}"
+          />
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2"
+          >Password</label
+        >
+        <div class="relative">
+          <span
+            class="material-icons-round absolute left-3 top-3 text-gray-400 text-sm"
+            >lock</span
+          >
+          <input
+            type="password"
+            name="password"
+            id="password"
+            required
+            minlength="8"
+            class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+            placeholder="••••••••"
+            oninput="checkPasswordStrength()"
+          />
+        </div>
+        <ul class="mt-2 text-xs text-gray-500 space-y-1">
+          <li id="req-length" class="flex items-center">
+            <span class="material-icons-round text-xs mr-1">close</span> Minimal
+            8 karakter
+          </li>
+          <li id="req-upper" class="flex items-center">
+            <span class="material-icons-round text-xs mr-1">close</span> Minimal
+            1 huruf kapital
+          </li>
+          <li id="req-digit" class="flex items-center">
+            <span class="material-icons-round text-xs mr-1">close</span> Minimal
+            1 angka
+          </li>
+        </ul>
+        <div class="mt-2">
+          <div class="flex items-center space-x-2">
+            <div class="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
+              <div
+                id="strengthBar"
+                class="h-full bg-gray-400 transition-all"
+                style="width: 0%"
+              ></div>
+            </div>
+            <span id="strengthText" class="text-xs text-gray-500"
+              >Kekuatan</span
+            >
+          </div>
+        </div>
+      </div>
+
+      <div class="flex items-start">
+        <input
+          type="checkbox"
+          required
+          class="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500 mt-1"
+        />
+        <span class="ml-2 text-sm text-gray-600">
+          Saya setuju dengan
+          <a href="#" class="text-indigo-600 hover:underline"
+            >Syarat & Ketentuan</a
+          >
+        </span>
+      </div>
+
+      <button
+        type="submit"
+        class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-3 rounded-lg font-semibold hover:from-indigo-700 hover:to-purple-700 transition"
+      >
+        Daftar
+      </button>
+    </form>
+
+    <p class="text-center mt-6 text-gray-600">
+      Sudah punya akun?
+      <a
+        href="{{ url_for('login') }}"
+        class="text-indigo-600 font-semibold hover:text-indigo-800"
+        >Masuk</a
+      >
+    </p>
+  </div>
+</div>
+{% endblock %} {% block extra_js %}
+<script>
+  function checkPasswordStrength() {
+    const password = document.getElementById("password").value;
+    const bar = document.getElementById("strengthBar");
+    const text = document.getElementById("strengthText");
+
+    // Update requirement indicators
+    const reqLength = document.getElementById("req-length");
+    const reqUpper = document.getElementById("req-upper");
+    const reqDigit = document.getElementById("req-digit");
+
+    const hasLength = password.length >= 8;
+    const hasUpper = /[A-Z]/.test(password);
+    const hasDigit = /[0-9]/.test(password);
+
+    // Update requirement visuals
+    updateRequirement(reqLength, hasLength);
+    updateRequirement(reqUpper, hasUpper);
+    updateRequirement(reqDigit, hasDigit);
+
+    let strength = 0;
+    if (hasLength) strength += 25;
+    if (password.length >= 12) strength += 25;
+    if (hasUpper) strength += 25;
+    if (hasDigit && /[^A-Za-z0-9]/.test(password)) strength += 25;
+
+    bar.style.width = strength + "%";
+
+    if (strength <= 25) {
+      bar.className = "h-full bg-red-500 transition-all";
+      text.textContent = "Lemah";
+    } else if (strength <= 50) {
+      bar.className = "h-full bg-yellow-500 transition-all";
+      text.textContent = "Sedang";
+    } else if (strength <= 75) {
+      bar.className = "h-full bg-blue-500 transition-all";
+      text.textContent = "Kuat";
+    } else {
+      bar.className = "h-full bg-green-500 transition-all";
+      text.textContent = "Sangat Kuat";
+    }
+  }
+
+  function updateRequirement(element, met) {
+    const icon = element.querySelector(".material-icons-round");
+    if (met) {
+      icon.textContent = "check";
+      element.classList.add("text-green-600");
+      element.classList.remove("text-gray-500");
+    } else {
+      icon.textContent = "close";
+      element.classList.remove("text-green-600");
+      element.classList.add("text-gray-500");
+    }
+  }
+</script>
+{% endblock %}

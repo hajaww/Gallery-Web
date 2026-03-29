@@ -1,0 +1,405 @@
+{% extends "base.html" %} {% block title %}Home - Galeri Foto{% endblock %} {%
+block extra_css %}
+<style>
+  .masonry-grid {
+    column-count: 1;
+    column-gap: 1.5rem;
+  }
+  @media (min-width: 640px) {
+    .masonry-grid {
+      column-count: 2;
+    }
+  }
+  @media (min-width: 1024px) {
+    .masonry-grid {
+      column-count: 3;
+    }
+  }
+  @media (min-width: 1280px) {
+    .masonry-grid {
+      column-count: 4;
+    }
+  }
+  .masonry-item {
+    break-inside: avoid;
+    margin-bottom: 1.5rem;
+  }
+</style>
+{% endblock %} {% block content %}
+<!-- ==================== HERO SECTION ==================== -->
+<div class="bg-gradient-to-br from-gray-50 to-white py-16 md:py-24">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center max-w-4xl mx-auto">
+      <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6">
+        Temukan Inspirasi <span class="text-indigo-600">Visual</span> Terbaik
+      </h1>
+      <p class="text-lg md:text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+        Kurasi mahakarya digital dari fotografer terbaik di seluruh dunia.
+        Galeri minimalis untuk pengalaman visual yang murni dan tanpa batas.
+      </p>
+
+      <!-- Search Bar -->
+      <div class="max-w-xl mx-auto">
+        <form method="GET" action="{{ url_for('search') }}" class="relative">
+          <input
+            type="text"
+            name="q"
+            value="{{ search_query|default('') }}"
+            placeholder="Cari karya, gaya, atau fotografer..."
+            class="w-full px-6 py-4 pl-12 bg-white border border-gray-200 rounded-full shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+          />
+          <button
+            type="submit"
+            class="material-icons-round absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-indigo-600 transition"
+          >
+            search
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== FILTER BUTTONS ==================== -->
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+  {% if search_query %}
+  <div class="flex items-center justify-between mb-4">
+    <p class="text-gray-600">
+      Hasil pencarian untuk:
+      <span class="font-semibold text-indigo-600">"{{ search_query }}"</span>
+      <span class="ml-2 text-sm text-gray-500"
+        >({{ pagination.total }} hasil)</span
+      >
+    </p>
+    <a
+      href="{{ url_for('index') }}"
+      class="text-sm text-gray-500 hover:text-gray-700 flex items-center gap-1"
+    >
+      <span class="material-icons-round text-sm">close</span>
+      Clear search
+    </a>
+  </div>
+  {% endif %}
+  <div class="flex flex-wrap items-center justify-between gap-4">
+    <div class="flex flex-wrap gap-3">
+      <button
+        class="px-5 py-2.5 bg-indigo-600 text-white rounded-full text-sm font-medium shadow-md hover:bg-indigo-700 transition"
+      >
+        Trending
+      </button>
+      <button
+        class="px-5 py-2.5 bg-white text-gray-600 rounded-full text-sm font-medium hover:bg-gray-100 border border-gray-200 shadow-sm transition"
+      >
+        Recent
+      </button>
+      <button
+        class="px-5 py-2.5 bg-white text-gray-600 rounded-full text-sm font-medium hover:bg-gray-100 border border-gray-200 shadow-sm transition"
+      >
+        Editor's Choice
+      </button>
+    </div>
+    <div class="flex gap-2">
+      <button class="p-2 text-gray-400 hover:text-indigo-600 transition">
+        <span class="material-icons-round">grid_view</span>
+      </button>
+      <button class="p-2 text-gray-400 hover:text-indigo-600 transition">
+        <span class="material-icons-round">view_agenda</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== PHOTO GRID ==================== -->
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+  <div class="masonry-grid">
+    {% for photo in photos %}
+    <div
+      class="masonry-item bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 group"
+    >
+      <!-- Foto dengan onclick openModal -->
+      <div
+        class="relative overflow-hidden cursor-pointer"
+        onclick="openModal({{ photo.id }}, '{{ photo.title }}', '{{ photo.description }}', '{{ url_for('static', filename='uploads/' + photo.image_file) }}', '{{ photo.uploader.name }}', {{ photo.likes_count }})"
+      >
+        <img
+          src="{{ url_for('static', filename='uploads/' + photo.image_file) }}"
+          alt="{{ photo.title }}"
+          class="w-full object-cover transform group-hover:scale-105 transition-transform duration-500"
+          loading="lazy"
+        />
+
+        <!-- Overlay on Hover -->
+        <div
+          class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+        >
+          <div class="absolute bottom-0 left-0 right-0 p-4">
+            <p class="text-white font-semibold">{{ photo.title }}</p>
+            <p class="text-white/80 text-sm">@{{ photo.uploader.name }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Info Section -->
+      <div class="p-4">
+        <div class="flex justify-between items-center">
+          <div class="min-w-0 flex-1">
+            <h3 class="font-semibold text-gray-800 truncate">
+              {{ photo.title }}
+            </h3>
+            <p class="text-sm text-gray-500">@{{ photo.uploader.name }}</p>
+          </div>
+          <!-- Like Button - FIXED (tanpa any()) -->
+          <button
+            onclick="likePhoto({{ photo.id }}, event)"
+            class="flex items-center space-x-1.5 px-3 py-1.5 rounded-full hover:bg-red-50 transition-colors group/btn"
+          >
+            <span
+              class="material-icons-round text-sm like-icon-{{ photo.id }} text-gray-400 hover:text-red-500 transition-colors"
+              >favorite</span
+            >
+            <span
+              class="text-sm font-medium text-gray-600 like-count-{{ photo.id }}"
+              >{{ photo.likes_count }}</span
+            >
+          </button>
+        </div>
+      </div>
+    </div>
+    {% else %}
+    <!-- Empty State -->
+    <div class="col-span-full text-center py-16">
+      <div
+        class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4"
+      >
+        <span class="material-icons-round text-4xl text-gray-400"
+          >photo_library</span
+        >
+      </div>
+      <h3 class="text-xl font-semibold text-gray-700 mb-2">Belum ada foto</h3>
+      <p class="text-gray-500 mb-6">Jadilah yang pertama upload karya kamu!</p>
+      {% if not current_user.is_authenticated %}
+      <a
+        href="{{ url_for('register') }}"
+        class="inline-flex items-center gap-2 bg-indigo-600 text-white px-6 py-3 rounded-full hover:bg-indigo-700 transition font-medium"
+      >
+        <span>Mulai Upload</span>
+        <span class="material-icons-round text-sm">arrow_forward</span>
+      </a>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- Pagination Controls -->
+  {% if pagination.pages > 1 %}
+  <div class="flex justify-center items-center gap-2 mt-12">
+    {% if pagination.has_prev %}
+    <a
+      href="{{ url_for('index', page=pagination.prev_num) }}"
+      class="px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition"
+    >
+      <span class="material-icons-round text-sm">chevron_left</span>
+    </a>
+    {% endif %} {% for page_num in pagination.iter_pages(left_edge=1,
+    right_edge=1, left_current=2, right_current=2) %} {% if page_num %} {% if
+    page_num == pagination.page %}
+    <span class="px-4 py-2 bg-indigo-600 text-white rounded-lg font-medium">
+      {{ page_num }}
+    </span>
+    {% else %}
+    <a
+      href="{{ url_for('index', page=page_num) }}"
+      class="px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition"
+    >
+      {{ page_num }}
+    </a>
+    {% endif %} {% else %}
+    <span class="px-2 text-gray-400">...</span>
+    {% endif %} {% endfor %} {% if pagination.has_next %}
+    <a
+      href="{{ url_for('index', page=pagination.next_num) }}"
+      class="px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition"
+    >
+      <span class="material-icons-round text-sm">chevron_right</span>
+    </a>
+    {% endif %}
+  </div>
+  {% endif %}
+</div>
+
+<!-- ==================== FEATURED COLLECTION ==================== -->
+<div class="bg-gray-50 py-16">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div
+      class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4"
+    >
+      <div>
+        <p
+          class="text-sm font-semibold text-indigo-600 uppercase tracking-wider mb-2"
+        >
+          Edisi Terbatas
+        </p>
+        <h2 class="text-2xl md:text-3xl font-bold text-gray-900">
+          Kurasi Mingguan: Zen Minimalisme
+        </h2>
+        <p class="text-gray-600 mt-2 max-w-xl">
+          Kumpulan karya yang mengeksplorasi ketenangan di tengah kebisingan.
+        </p>
+      </div>
+      <a
+        href="#"
+        class="inline-flex items-center space-x-2 text-indigo-600 font-medium hover:text-indigo-800 transition"
+      >
+        <span>Lihat Koleksi Lengkap</span>
+        <span class="material-icons-round text-sm">arrow_forward</span>
+      </a>
+    </div>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div class="rounded-2xl overflow-hidden shadow-md group">
+        <img
+          src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=400"
+          alt="Featured 1"
+          class="w-full h-48 md:h-64 object-cover group-hover:scale-105 transition-transform duration-500"
+        />
+      </div>
+      <div class="rounded-2xl overflow-hidden shadow-md group">
+        <img
+          src="https://images.unsplash.com/photo-1472214103451-9374bd1c798e?w=400"
+          alt="Featured 2"
+          class="w-full h-48 md:h-64 object-cover group-hover:scale-105 transition-transform duration-500"
+        />
+      </div>
+      <div class="rounded-2xl overflow-hidden shadow-md group">
+        <img
+          src="https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=400"
+          alt="Featured 3"
+          class="w-full h-48 md:h-64 object-cover group-hover:scale-105 transition-transform duration-500"
+        />
+      </div>
+      <div class="rounded-2xl overflow-hidden shadow-md group">
+        <img
+          src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=400"
+          alt="Featured 4"
+          class="w-full h-48 md:h-64 object-cover group-hover:scale-105 transition-transform duration-500"
+        />
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %} {% block extra_js %}
+<!-- Include Modal Component -->
+{% include 'components/_photo_card.html' %}
+
+<script>
+  let currentPhotoId = null;
+
+  // Get CSRF Token dari meta tag
+  function getCSRFToken() {
+    return document
+      .querySelector('meta[name="csrf-token"]')
+      .getAttribute("content");
+  }
+
+  // Fungsi Buka Modal
+  function openModal(id, title, description, imageSrc, username, likes) {
+    currentPhotoId = id;
+    document.getElementById("modalImage").src = imageSrc;
+    document.getElementById("modalTitle").textContent = title;
+    document.getElementById("modalDescription").textContent =
+      description || "Tidak ada deskripsi";
+    document.getElementById("modalUsername").textContent = "@" + username;
+    document.getElementById("modalAvatar").textContent = username
+      .charAt(0)
+      .toUpperCase();
+    document.getElementById("modalLikeCount").textContent = likes;
+    document.getElementById("photoModal").classList.remove("hidden");
+    document.body.style.overflow = "hidden";
+  }
+
+  // Fungsi Tutup Modal
+  function closeModal(event) {
+    if (!event || event.target === document.getElementById("photoModal")) {
+      document.getElementById("photoModal").classList.add("hidden");
+      document.body.style.overflow = "auto";
+    }
+  }
+
+  // Fungsi Like dari Card (Homepage)
+  function likePhoto(photoId, event) {
+    if (event) {
+      event.stopPropagation();
+      event.preventDefault();
+    }
+
+    fetch("/like/" + photoId, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": getCSRFToken(),
+      },
+    })
+      .then((response) => {
+        if (response.status === 401) {
+          alert("Silakan login untuk memberikan like!");
+          window.location.href = "/login";
+          throw new Error("Unauthorized");
+        }
+        if (response.status === 429) {
+          alert("Terlalu banyak request! Silakan tunggu beberapa saat.");
+          throw new Error("Rate limit exceeded");
+        }
+        if (!response.ok) {
+          throw new Error("Network response was not ok: " + response.status);
+        }
+        return response.json();
+      })
+      .then((data) => {
+        const likeCount = document.querySelector(".like-count-" + photoId);
+        const likeIcon = document.querySelector(".like-icon-" + photoId);
+
+        if (likeCount) {
+          likeCount.textContent = data.likes;
+        }
+
+        if (likeIcon) {
+          if (data.liked) {
+            likeIcon.classList.remove("text-gray-400");
+            likeIcon.classList.add("text-red-500");
+          } else {
+            likeIcon.classList.remove("text-red-500");
+            likeIcon.classList.add("text-gray-400");
+          }
+        }
+      })
+      .catch((error) => {
+        if (
+          error.message !== "Unauthorized" &&
+          error.message !== "Rate limit exceeded"
+        ) {
+          console.error("Error:", error);
+        }
+      });
+  }
+
+  // Fungsi Like dari Modal
+  function likePhotoFromModal(event) {
+    if (event) {
+      event.stopPropagation();
+      event.preventDefault();
+    }
+
+    if (currentPhotoId) {
+      likePhoto(currentPhotoId, event);
+    }
+  }
+
+  // Close modal dengan ESC key
+  document.addEventListener("keydown", function (event) {
+    if (event.key === "Escape") {
+      closeModal();
+    }
+  });
+
+  console.log("✅ Homepage JavaScript loaded successfully");
+</script>
+{% endblock %}

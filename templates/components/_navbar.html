@@ -1,0 +1,97 @@
+<!-- templates/components/_navbar.html -->
+<nav class="bg-white shadow-sm sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-16">
+            
+            <!-- Logo -->
+            <div class="flex-shrink-0">
+                <a href="{{ url_for('index') }}" class="flex items-center space-x-2">
+                    <span class="material-icons-round text-indigo-600">photo_camera</span>
+                    <span class="text-xl font-bold text-gray-900">Galeri Foto</span>
+                </a>
+            </div>
+            
+            <!-- Center Navigation (Desktop) - ACTIVE STATE FIXED -->
+            <div class="hidden md:flex items-center space-x-8">
+                <!-- Explore - Active jika di index -->
+                <a href="{{ url_for('index') }}" 
+                   class="font-medium pb-1 transition {{ 'text-indigo-600 border-b-2 border-indigo-600' if request.endpoint == 'index' else 'text-gray-600 hover:text-gray-900' }}">
+                    Explore
+                </a>
+                
+                <!-- Upload - Active jika di upload -->
+                <a href="{{ url_for('upload') }}" 
+                   class="font-medium pb-1 transition {{ 'text-indigo-600 border-b-2 border-indigo-600' if request.endpoint == 'upload' else 'text-gray-600 hover:text-gray-900' }}">
+                    Upload
+                </a>
+                
+                <!-- Foto Saya - Active jika di my_photos atau edit_photo -->
+                <a href="{{ url_for('my_photos') }}" 
+                   class="font-medium pb-1 transition {{ 'text-indigo-600 border-b-2 border-indigo-600' if request.endpoint in ['my_photos', 'edit_photo'] else 'text-gray-600 hover:text-gray-900' }}">
+                    Foto Saya
+                </a>
+            </div>
+            
+            <!-- Right Menu -->
+            <div class="flex items-center space-x-4">
+                {% if current_user.is_authenticated %}
+                    <!-- Profile Dropdown -->
+                    <div class="relative">
+                        <button onclick="toggleDropdown()" class="flex items-center space-x-2 focus:outline-none">
+                            <div class="w-8 h-8 bg-indigo-600 rounded-full flex items-center justify-center text-white font-semibold">
+                                {{ current_user.name[0].upper() }}
+                            </div>
+                            <span class="material-icons-round text-sm text-gray-600">expand_more</span>
+                        </button>
+                        
+                        <div id="profileDropdown" class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 hidden border border-gray-200 z-50">
+                            <a href="{{ url_for('edit_profile') }}" 
+                               class="block px-4 py-2 text-sm hover:bg-gray-100 flex items-center space-x-2 {{ 'text-indigo-600 bg-indigo-50' if request.endpoint == 'edit_profile' else 'text-gray-700' }}">
+                                <span class="material-icons-round text-sm">edit</span>
+                                <span>Edit Profil</span>
+                            </a>
+                            <a href="{{ url_for('my_photos') }}" 
+                               class="block px-4 py-2 text-sm hover:bg-gray-100 flex items-center space-x-2 md:hidden {{ 'text-indigo-600 bg-indigo-50' if request.endpoint in ['my_photos', 'edit_photo'] else 'text-gray-700' }}">
+                                <span class="material-icons-round text-sm">photo_library</span>
+                                <span>Foto Saya</span>
+                            </a>
+                            <hr class="my-1">
+                            <a href="{{ url_for('logout') }}" 
+                               class="block px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center space-x-2">
+                                <span class="material-icons-round text-sm">logout</span>
+                                <span>Logout</span>
+                            </a>
+                        </div>
+                    </div>
+                {% else %}
+                    <!-- Login - Active jika di login -->
+                    <a href="{{ url_for('login') }}" 
+                       class="font-medium {{ 'text-indigo-600' if request.endpoint == 'login' else 'text-gray-600 hover:text-gray-900' }}">
+                        Sign In
+                    </a>
+                    <!-- Register - Active jika di register -->
+                    <a href="{{ url_for('register') }}" 
+                       class="bg-indigo-600 text-white px-5 py-2.5 rounded-full hover:bg-indigo-700 font-medium transition {{ 'ring-2 ring-indigo-300 ring-offset-2' if request.endpoint == 'register' else '' }}">
+                        Register
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</nav>
+
+<script>
+function toggleDropdown() {
+    const dropdown = document.getElementById('profileDropdown');
+    dropdown.classList.toggle('hidden');
+}
+
+document.addEventListener('click', function(event) {
+    const dropdown = document.getElementById('profileDropdown');
+    const button = event.target.closest('button');
+    
+    if (dropdown && !dropdown.contains(event.target) && !button) {
+        dropdown.classList.add('hidden');
+    }
+});
+</script>
