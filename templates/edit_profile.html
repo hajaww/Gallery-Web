@@ -1,9 +1,11 @@
-{% extends "base.html" %} {% block title %}Edit Profil - Galeri Foto{% endblock
-%} {% block content %}
+{% extends "base.html" %} {% block title %}Edit Profil - Lensa{% endblock %} {%
+block content %}
 <div
   class="min-h-[80vh] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8"
 >
-  <div class="max-w-md w-full bg-white rounded-2xl shadow-xl p-8">
+  <div
+    class="max-w-md w-full bg-white dark:bg-dark-800 rounded-2xl shadow-xl p-8"
+  >
     <!-- Header -->
     <div class="text-center mb-8">
       <div class="flex justify-center mb-4">
@@ -13,8 +15,12 @@
           {{ current_user.name[0].upper() }}
         </div>
       </div>
-      <h2 class="text-2xl font-bold text-gray-900">Edit Profil</h2>
-      <p class="text-gray-500 text-sm">Update informasi profil Anda</p>
+      <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
+        Edit Profil
+      </h2>
+      <p class="text-gray-500 dark:text-gray-400 text-sm">
+        Update informasi profil Anda
+      </p>
     </div>
 
     <!-- Form -->
@@ -26,12 +32,13 @@
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
 
       <div>
-        <label class="block text-sm font-medium text-gray-700 mb-2"
+        <label
+          class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
           >Nama Lengkap</label
         >
         <div class="relative">
           <span
-            class="material-icons-round absolute left-3 top-3 text-gray-400 text-sm"
+            class="material-icons-round absolute left-3 top-3 text-gray-400 dark:text-gray-500 text-sm"
             >person</span
           >
           <input
@@ -39,18 +46,19 @@
             name="name"
             required
             value="{{ current_user.name }}"
-            class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+            class="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-dark-600 bg-white dark:bg-dark-700 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
           />
         </div>
       </div>
 
       <div>
-        <label class="block text-sm font-medium text-gray-700 mb-2"
+        <label
+          class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
           >Email</label
         >
         <div class="relative">
           <span
-            class="material-icons-round absolute left-3 top-3 text-gray-400 text-sm"
+            class="material-icons-round absolute left-3 top-3 text-gray-400 dark:text-gray-500 text-sm"
             >mail</span
           >
           <input
@@ -58,17 +66,19 @@
             name="email"
             required
             value="{{ current_user.email }}"
-            class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-gray-50"
+            class="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-dark-600 bg-gray-50 dark:bg-dark-700 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
             disabled
           />
         </div>
-        <p class="text-xs text-gray-500 mt-1">Email tidak dapat diubah</p>
+        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+          Email tidak dapat diubah
+        </p>
       </div>
 
       <div class="flex space-x-4">
         <a
           href="{{ url_for('my_photos') }}"
-          class="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-lg font-semibold hover:bg-gray-50 text-center"
+          class="flex-1 px-6 py-3 border border-gray-300 dark:border-dark-600 text-gray-700 dark:text-gray-300 rounded-lg font-semibold hover:bg-gray-50 dark:hover:bg-dark-700 text-center"
         >
           Batal
         </a>
@@ -85,7 +95,7 @@
     <p class="text-center mt-6">
       <a
         href="{{ url_for('my_photos') }}"
-        class="text-indigo-600 font-medium hover:text-indigo-800 text-sm"
+        class="text-indigo-600 dark:text-indigo-400 font-medium hover:text-indigo-800 dark:hover:text-indigo-300 text-sm"
       >
         ← Kembali ke Foto Saya
       </a>

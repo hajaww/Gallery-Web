@@ -1,5 +1,5 @@
-{% extends "base.html" %} {% block title %}Home - Galeri Foto{% endblock %} {%
-block extra_css %}
+{% extends "base.html" %} {% block title %}Home - Lensa{% endblock %} {% block
+extra_css %}
 <style>
   .masonry-grid {
     column-count: 1;
@@ -26,19 +26,24 @@ block extra_css %}
   }
 </style>
 {% endblock %} {% block content %}
-<!-- ==================== HERO SECTION ==================== -->
-<div class="bg-gradient-to-br from-gray-50 to-white py-16 md:py-24">
+<div
+  class="bg-gradient-to-br from-gray-50 to-white dark:from-dark-900 dark:to-dark-800 py-16 md:py-24"
+>
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="text-center max-w-4xl mx-auto">
-      <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6">
-        Temukan Inspirasi <span class="text-indigo-600">Visual</span> Terbaik
+      <h1
+        class="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white mb-6"
+      >
+        Temukan Inspirasi
+        <span class="text-indigo-600 dark:text-indigo-400">Visual</span> Terbaik
       </h1>
-      <p class="text-lg md:text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+      <p
+        class="text-lg md:text-xl text-gray-600 dark:text-gray-400 mb-8 max-w-2xl mx-auto"
+      >
         Kurasi mahakarya digital dari fotografer terbaik di seluruh dunia.
         Galeri minimalis untuk pengalaman visual yang murni dan tanpa batas.
       </p>
 
-      <!-- Search Bar -->
       <div class="max-w-xl mx-auto">
         <form method="GET" action="{{ url_for('search') }}" class="relative">
           <input
@@ -46,11 +51,11 @@ block extra_css %}
             name="q"
             value="{{ search_query|default('') }}"
             placeholder="Cari karya, gaya, atau fotografer..."
-            class="w-full px-6 py-4 pl-12 bg-white border border-gray-200 rounded-full shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+            class="w-full px-6 py-4 pl-12 bg-white dark:bg-dark-700 border border-gray-200 dark:border-dark-600 rounded-full shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
           />
           <button
             type="submit"
-            class="material-icons-round absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-indigo-600 transition"
+            class="material-icons-round absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 hover:text-indigo-600 dark:hover:text-indigo-400 transition"
           >
             search
           </button>
@@ -60,20 +65,21 @@ block extra_css %}
   </div>
 </div>
 
-<!-- ==================== FILTER BUTTONS ==================== -->
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
   {% if search_query %}
   <div class="flex items-center justify-between mb-4">
-    <p class="text-gray-600">
+    <p class="text-gray-600 dark:text-gray-400">
       Hasil pencarian untuk:
-      <span class="font-semibold text-indigo-600">"{{ search_query }}"</span>
-      <span class="ml-2 text-sm text-gray-500"
+      <span class="font-semibold text-indigo-600 dark:text-indigo-400"
+        >"{{ search_query }}"</span
+      >
+      <span class="ml-2 text-sm text-gray-500 dark:text-gray-500"
         >({{ pagination.total }} hasil)</span
       >
     </p>
     <a
       href="{{ url_for('index') }}"
-      class="text-sm text-gray-500 hover:text-gray-700 flex items-center gap-1"
+      class="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 flex items-center gap-1"
     >
       <span class="material-icons-round text-sm">close</span>
       Clear search
@@ -88,35 +94,38 @@ block extra_css %}
         Trending
       </button>
       <button
-        class="px-5 py-2.5 bg-white text-gray-600 rounded-full text-sm font-medium hover:bg-gray-100 border border-gray-200 shadow-sm transition"
+        class="px-5 py-2.5 bg-white dark:bg-dark-700 text-gray-600 dark:text-gray-300 rounded-full text-sm font-medium hover:bg-gray-100 dark:hover:bg-dark-600 border border-gray-200 dark:border-dark-600 shadow-sm transition"
       >
         Recent
       </button>
       <button
-        class="px-5 py-2.5 bg-white text-gray-600 rounded-full text-sm font-medium hover:bg-gray-100 border border-gray-200 shadow-sm transition"
+        class="px-5 py-2.5 bg-white dark:bg-dark-700 text-gray-600 dark:text-gray-300 rounded-full text-sm font-medium hover:bg-gray-100 dark:hover:bg-dark-600 border border-gray-200 dark:border-dark-600 shadow-sm transition"
       >
         Editor's Choice
       </button>
     </div>
     <div class="flex gap-2">
-      <button class="p-2 text-gray-400 hover:text-indigo-600 transition">
+      <button
+        class="p-2 text-gray-400 dark:text-gray-500 hover:text-indigo-600 dark:hover:text-indigo-400 transition"
+      >
         <span class="material-icons-round">grid_view</span>
       </button>
-      <button class="p-2 text-gray-400 hover:text-indigo-600 transition">
+      <button
+        class="p-2 text-gray-400 dark:text-gray-500 hover:text-indigo-600 dark:hover:text-indigo-400 transition"
+      >
         <span class="material-icons-round">view_agenda</span>
       </button>
     </div>
   </div>
 </div>
 
-<!-- ==================== PHOTO GRID ==================== -->
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+  {% if photos %}
   <div class="masonry-grid">
     {% for photo in photos %}
     <div
-      class="masonry-item bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 group"
+      class="masonry-item bg-white dark:bg-dark-800 rounded-2xl shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 group"
     >
-      <!-- Foto dengan onclick openModal -->
       <div
         class="relative overflow-hidden cursor-pointer"
         onclick="openModal({{ photo.id }}, '{{ photo.title }}', '{{ photo.description }}', '{{ url_for('static', filename='uploads/' + photo.image_file) }}', '{{ photo.uploader.name }}', {{ photo.likes_count }})"
@@ -128,7 +137,6 @@ block extra_css %}
           loading="lazy"
         />
 
-        <!-- Overlay on Hover -->
         <div
           class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"
         >
@@ -139,116 +147,150 @@ block extra_css %}
         </div>
       </div>
 
-      <!-- Info Section -->
       <div class="p-4">
         <div class="flex justify-between items-center">
           <div class="min-w-0 flex-1">
-            <h3 class="font-semibold text-gray-800 truncate">
+            <h3 class="font-semibold text-gray-800 dark:text-gray-200 truncate">
               {{ photo.title }}
             </h3>
-            <p class="text-sm text-gray-500">@{{ photo.uploader.name }}</p>
+            <p class="text-sm text-gray-500 dark:text-gray-400">
+              @{{ photo.uploader.name }}
+            </p>
           </div>
-          <!-- Like Button - FIXED (tanpa any()) -->
           <button
             onclick="likePhoto({{ photo.id }}, event)"
-            class="flex items-center space-x-1.5 px-3 py-1.5 rounded-full hover:bg-red-50 transition-colors group/btn"
+            class="flex items-center space-x-1.5 px-3 py-1.5 rounded-full hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors group/btn"
           >
             <span
-              class="material-icons-round text-sm like-icon-{{ photo.id }} text-gray-400 hover:text-red-500 transition-colors"
+              class="material-icons-round text-sm like-icon-{{ photo.id }} text-gray-400 dark:text-gray-500 hover:text-red-500 transition-colors"
               >favorite</span
             >
             <span
-              class="text-sm font-medium text-gray-600 like-count-{{ photo.id }}"
+              class="text-sm font-medium text-gray-600 dark:text-gray-400 like-count-{{ photo.id }}"
               >{{ photo.likes_count }}</span
             >
           </button>
         </div>
       </div>
     </div>
-    {% else %}
-    <!-- Empty State -->
-    <div class="col-span-full text-center py-16">
-      <div
-        class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4"
-      >
-        <span class="material-icons-round text-4xl text-gray-400"
-          >photo_library</span
-        >
-      </div>
-      <h3 class="text-xl font-semibold text-gray-700 mb-2">Belum ada foto</h3>
-      <p class="text-gray-500 mb-6">Jadilah yang pertama upload karya kamu!</p>
-      {% if not current_user.is_authenticated %}
-      <a
-        href="{{ url_for('register') }}"
-        class="inline-flex items-center gap-2 bg-indigo-600 text-white px-6 py-3 rounded-full hover:bg-indigo-700 transition font-medium"
-      >
-        <span>Mulai Upload</span>
-        <span class="material-icons-round text-sm">arrow_forward</span>
-      </a>
-      {% endif %}
-    </div>
     {% endfor %}
   </div>
 
-  <!-- Pagination Controls -->
   {% if pagination.pages > 1 %}
   <div class="flex justify-center items-center gap-2 mt-12">
     {% if pagination.has_prev %}
     <a
       href="{{ url_for('index', page=pagination.prev_num) }}"
-      class="px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition"
+      class="px-4 py-2 bg-white dark:bg-dark-700 border border-gray-300 dark:border-dark-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-dark-600 transition"
     >
       <span class="material-icons-round text-sm">chevron_left</span>
     </a>
     {% endif %} {% for page_num in pagination.iter_pages(left_edge=1,
     right_edge=1, left_current=2, right_current=2) %} {% if page_num %} {% if
     page_num == pagination.page %}
-    <span class="px-4 py-2 bg-indigo-600 text-white rounded-lg font-medium">
-      {{ page_num }}
-    </span>
+    <span class="px-4 py-2 bg-indigo-600 text-white rounded-lg font-medium"
+      >{{ page_num }}</span
+    >
     {% else %}
     <a
       href="{{ url_for('index', page=page_num) }}"
-      class="px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition"
+      class="px-4 py-2 bg-white dark:bg-dark-700 border border-gray-300 dark:border-dark-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-dark-600 transition"
+      >{{ page_num }}</a
     >
-      {{ page_num }}
-    </a>
     {% endif %} {% else %}
-    <span class="px-2 text-gray-400">...</span>
+    <span class="px-2 text-gray-400 dark:text-gray-500">...</span>
     {% endif %} {% endfor %} {% if pagination.has_next %}
     <a
       href="{{ url_for('index', page=pagination.next_num) }}"
-      class="px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition"
+      class="px-4 py-2 bg-white dark:bg-dark-700 border border-gray-300 dark:border-dark-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-dark-600 transition"
     >
       <span class="material-icons-round text-sm">chevron_right</span>
     </a>
     {% endif %}
   </div>
+  {% endif %} {% else %}
+  <div
+    class="w-full bg-white dark:bg-dark-800 rounded-3xl shadow-sm border border-gray-200 dark:border-dark-700 p-8 md:p-12 lg:p-16 flex flex-col md:flex-row items-center justify-center gap-8 md:gap-12 relative overflow-hidden mt-6 mb-12"
+  >
+    <div
+      class="absolute -top-10 -left-10 w-40 h-40 bg-indigo-500/5 blur-3xl rounded-full"
+    ></div>
+    <div
+      class="absolute -bottom-10 -right-10 w-40 h-40 bg-pink-500/5 blur-3xl rounded-full"
+    ></div>
+
+    <div class="relative flex-shrink-0">
+      <div
+        class="w-32 h-32 md:w-40 md:h-40 bg-gradient-to-br from-indigo-50 to-white dark:from-dark-700 dark:to-dark-800 rounded-full shadow-inner flex items-center justify-center border border-indigo-50 dark:border-dark-600"
+      >
+        <span class="material-icons-round text-6xl md:text-7xl text-indigo-400">
+          photo_library
+        </span>
+      </div>
+      <div
+        class="absolute -top-2 -right-2 w-12 h-12 bg-pink-100 dark:bg-pink-900/30 rounded-full flex items-center justify-center shadow-md border-4 border-white dark:border-dark-800 animate-bounce"
+      >
+        <span class="material-icons-round text-pink-500 text-2xl"
+          >search_off</span
+        >
+      </div>
+    </div>
+
+    <div class="text-center md:text-left max-w-lg z-10">
+      <h3
+        class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-4 tracking-tight"
+      >
+        Belum Ada Karya
+      </h3>
+      <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">
+        Jejak visual di sini masih kosong. Jadilah pionir dengan mengunggah foto
+        pertamamu atau jelajahi koleksi lainnya yang mungkin kamu lewatkan.
+      </p>
+      <div
+        class="flex flex-col sm:flex-row gap-4 justify-center md:justify-start"
+      >
+        <a
+          href="{{ url_for('index') }}"
+          class="px-8 py-3.5 bg-white dark:bg-dark-700 border border-gray-200 dark:border-dark-600 text-gray-700 dark:text-gray-300 rounded-full font-semibold hover:bg-gray-50 dark:hover:bg-dark-600 transition shadow-sm"
+        >
+          Jelajahi Beranda
+        </a>
+        <a
+          href="/upload"
+          class="px-8 py-3.5 bg-indigo-600 text-white rounded-full font-semibold hover:bg-indigo-700 transition shadow-md shadow-indigo-200 flex items-center justify-center gap-2"
+        >
+          <span class="material-icons-round text-sm">add_a_photo</span>
+          Mulai Unggah
+        </a>
+      </div>
+    </div>
+  </div>
   {% endif %}
 </div>
 
-<!-- ==================== FEATURED COLLECTION ==================== -->
-<div class="bg-gray-50 py-16">
+<div class="bg-gray-50 dark:bg-dark-900 py-16">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div
       class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4"
     >
       <div>
         <p
-          class="text-sm font-semibold text-indigo-600 uppercase tracking-wider mb-2"
+          class="text-sm font-semibold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider mb-2"
         >
           Edisi Terbatas
         </p>
-        <h2 class="text-2xl md:text-3xl font-bold text-gray-900">
+        <h2
+          class="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white"
+        >
           Kurasi Mingguan: Zen Minimalisme
         </h2>
-        <p class="text-gray-600 mt-2 max-w-xl">
+        <p class="text-gray-600 dark:text-gray-400 mt-2 max-w-xl">
           Kumpulan karya yang mengeksplorasi ketenangan di tengah kebisingan.
         </p>
       </div>
       <a
         href="#"
-        class="inline-flex items-center space-x-2 text-indigo-600 font-medium hover:text-indigo-800 transition"
+        class="inline-flex items-center space-x-2 text-indigo-600 dark:text-indigo-400 font-medium hover:text-indigo-800 dark:hover:text-indigo-300 transition"
       >
         <span>Lihat Koleksi Lengkap</span>
         <span class="material-icons-round text-sm">arrow_forward</span>
@@ -286,9 +328,7 @@ block extra_css %}
     </div>
   </div>
 </div>
-{% endblock %} {% block extra_js %}
-<!-- Include Modal Component -->
-{% include 'components/_photo_card.html' %}
+{% endblock %} {% block extra_js %} {% include 'components/_photo_card.html' %}
 
 <script>
   let currentPhotoId = null;
