@@ -78,32 +78,44 @@ def save_uploaded_file(file):
 
 # ==================== ROUTES ====================
 
-# Home - Galeri Foto dengan Pagination
+# Home - Galeri Foto dengan Pagination & Sorting
 @app.route('/')
 def index():
     page = request.args.get('page', 1, type=int)
+    sort_by = request.args.get('sort', 'recent')  # recent atau trending
     per_page = 12  # Foto per halaman
-    
-    photos_pagination = Photo.query.order_by(
-        Photo.created_at.desc()
-    ).paginate(page=page, per_page=per_page, error_out=False)
-    
-    return render_template('index.html', 
-                         photos=photos_pagination.items, 
-                         pagination=photos_pagination)
+
+    # Tentukan urutan berdasarkan parameter sort
+    if sort_by == 'trending':
+        # Trending: urutkan berdasarkan jumlah like terbanyak
+        photos_pagination = Photo.query.order_by(
+            Photo.likes_count.desc(),
+            Photo.created_at.desc()
+        ).paginate(page=page, per_page=per_page, error_out=False)
+    else:
+        # Recent: urutkan berdasarkan tanggal upload terbaru (default)
+        photos_pagination = Photo.query.order_by(
+            Photo.created_at.desc()
+        ).paginate(page=page, per_page=per_page, error_out=False)
+
+    return render_template('index.html',
+                         photos=photos_pagination.items,
+                         pagination=photos_pagination,
+                         sort_by=sort_by)
 
 # Search Foto
 @app.route('/search')
 def search():
     query = request.args.get('q', '').strip()
     page = request.args.get('page', 1, type=int)
+    sort_by = request.args.get('sort', 'recent')
     per_page = 12
-    
+
     if not query:
         return redirect(url_for('index'))
-    
+
     # Search berdasarkan judul, deskripsi, atau nama uploader
-    photos_pagination = Photo.query.join(
+    base_query = Photo.query.join(
         Photo.uploader
     ).filter(
         db.or_(
@@ -111,14 +123,28 @@ def search():
             Photo.description.ilike(f'%{query}%'),
             User.name.ilike(f'%{query}%')
         )
-    ).order_by(
-        Photo.created_at.desc()
-    ).paginate(page=page, per_page=per_page, error_out=False)
-    
-    return render_template('index.html', 
-                         photos=photos_pagination.items, 
+    )
+
+    # Terapkan sorting
+    if sort_by == 'trending':
+        base_query = base_query.order_by(
+            Photo.likes_count.desc(),
+            Photo.created_at.desc()
+        )
+    else:
+        base_query = base_query.order_by(
+            Photo.created_at.desc()
+        )
+
+    photos_pagination = base_query.paginate(
+        page=page, per_page=per_page, error_out=False
+    )
+
+    return render_template('index.html',
+                         photos=photos_pagination.items,
                          pagination=photos_pagination,
-                         search_query=query)
+                         search_query=query,
+                         sort_by=sort_by)
 
 # Login
 @app.route('/login', methods=['GET', 'POST'])
