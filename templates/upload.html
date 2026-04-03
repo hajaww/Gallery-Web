@@ -51,6 +51,15 @@ block content %}
             Supported: .jpg, .png, .webp (Max 16MB)
           </p>
         </label>
+        
+        <!-- Error Message Container -->
+        <div id="fileError" class="hidden mt-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-300 dark:border-red-800 rounded-lg">
+          <div class="flex items-center space-x-2">
+            <span class="material-icons-round text-red-600 dark:text-red-400 text-sm">error</span>
+            <p id="fileErrorText" class="text-red-600 dark:text-red-400 text-sm font-medium"></p>
+          </div>
+        </div>
+
         {% if photo %}
         <div class="mt-4">
           <img
@@ -130,20 +139,142 @@ block content %}
 </div>
 {% endblock %} {% block extra_js %}
 <script>
+  // Konstanta batas ukuran file (16MB)
+  const MAX_FILE_SIZE = 16 * 1024 * 1024; // 16MB dalam bytes
+  const MAX_FILE_SIZE_MB = 16;
+
+  // Format ukuran file ke MB
+  function formatFileSize(bytes) {
+    return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
+  }
+
+  // Tampilkan error
+  function showFileError(message) {
+    const errorDiv = document.getElementById('fileError');
+    const errorText = document.getElementById('fileErrorText');
+    errorText.textContent = message;
+    errorDiv.classList.remove('hidden');
+    
+    // Auto hide setelah 5 detik
+    setTimeout(() => {
+      errorDiv.classList.add('hidden');
+    }, 5000);
+  }
+
+  // Sembunyikan error
+  function hideFileError() {
+    const errorDiv = document.getElementById('fileError');
+    errorDiv.classList.add('hidden');
+  }
+
+  // Validasi file
+  function validateFile(file) {
+    // Reset error
+    hideFileError();
+
+    if (!file) {
+      return false;
+    }
+
+    // Cek ukuran file
+    if (file.size > MAX_FILE_SIZE) {
+      showFileError(`Ukuran file terlalu besar! Maksimal ${MAX_FILE_SIZE_MB}MB. Ukuran file Anda: ${formatFileSize(file.size)}`);
+      return false;
+    }
+
+    // Cek ekstensi file
+    const allowedExtensions = ['jpg', 'jpeg', 'png', 'webp'];
+    const fileExtension = file.name.split('.').pop().toLowerCase();
+    
+    if (!allowedExtensions.includes(fileExtension)) {
+      showFileError(`Format file tidak didukung! Format yang didukung: ${allowedExtensions.join(', ')}`);
+      return false;
+    }
+
+    // Cek apakah file kosong
+    if (file.size === 0) {
+      showFileError('File kosong atau rusak!');
+      return false;
+    }
+
+    return true;
+  }
+
   function previewImage(input) {
+    // Reset error
+    hideFileError();
+
     if (input.files && input.files[0]) {
+      const file = input.files[0];
+
+      // Validasi file sebelum preview
+      if (!validateFile(file)) {
+        // Clear input jika validasi gagal
+        input.value = '';
+        return;
+      }
+
       const reader = new FileReader();
       reader.onload = function (e) {
         document.getElementById("previewImg").src = e.target.result;
         document.getElementById("imagePreview").classList.remove("hidden");
       };
-      reader.readAsDataURL(input.files[0]);
+      reader.readAsDataURL(file);
     }
   }
 
   function clearPreview() {
     document.getElementById("photoInput").value = "";
     document.getElementById("imagePreview").classList.add("hidden");
+    hideFileError();
   }
+
+  // Validasi saat form submit
+  document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
+    const photoInput = document.getElementById('photoInput');
+
+    form.addEventListener('submit', function(e) {
+      // Hanya validasi jika ada file yang dipilih (untuk upload baru)
+      if (photoInput.files && photoInput.files[0]) {
+        if (!validateFile(photoInput.files[0])) {
+          e.preventDefault();
+          return false;
+        }
+      }
+    });
+
+    // Drag and drop support
+    const dropZone = document.getElementById('dropZone');
+
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+      dropZone.addEventListener(eventName, preventDefaults, false);
+    });
+
+    function preventDefaults(e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+
+    ['dragenter', 'dragover'].forEach(eventName => {
+      dropZone.addEventListener(eventName, () => {
+        dropZone.classList.add('border-indigo-500', 'bg-indigo-50', 'dark:bg-indigo-900/10');
+      });
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+      dropZone.addEventListener(eventName, () => {
+        dropZone.classList.remove('border-indigo-500', 'bg-indigo-50', 'dark:bg-indigo-900/10');
+      });
+    });
+
+    dropZone.addEventListener('drop', function(e) {
+      const files = e.dataTransfer.files;
+      if (files && files[0]) {
+        photoInput.files = files;
+        previewImage(photoInput);
+      }
+    });
+  });
 </script>
 {% endblock %}
