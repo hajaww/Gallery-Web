@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
+from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, send_from_directory
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from flask_wtf.csrf import CSRFProtect
 from flask_migrate import Migrate
@@ -390,6 +390,28 @@ def like_photo(photo_id):
         photo.likes_count += 1
         db.session.commit()
         return jsonify({'likes': photo.likes_count, 'liked': True})
+
+# Download Foto
+@app.route('/download/<int:photo_id>')
+def download_photo(photo_id):
+    photo = Photo.query.get_or_404(photo_id)
+    
+    # Direktori file upload
+    upload_dir = app.config['UPLOAD_FOLDER']
+    
+    # Cek apakah file ada
+    file_path = os.path.join(upload_dir, photo.image_file)
+    if not os.path.exists(file_path):
+        flash('File foto tidak ditemukan', 'error')
+        return redirect(url_for('index'))
+    
+    # Kirim file sebagai download
+    return send_from_directory(
+        upload_dir,
+        photo.image_file,
+        as_attachment=True,
+        download_name=photo.title + os.path.splitext(photo.image_file)[1]
+    )
 
 # Error Handlers
 @app.errorhandler(404)

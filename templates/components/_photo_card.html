@@ -117,13 +117,17 @@
     }
   }
 
-  // Fungsi Download
+  // Fungsi Download - Menggunakan route backend untuk download yang proper
   function downloadPhoto() {
-    const img = document.getElementById("modalImage");
-    const link = document.createElement("a");
-    link.href = img.src;
-    link.download = "foto-galeri.jpg";
-    link.target = "_blank";
-    link.click();
+    // Gunakan variabel currentPhotoId yang sudah ada di index.html
+    const photoId = window.currentPhotoId;
+    
+    if (!photoId) {
+      alert('Terjadi kesalahan, silakan refresh halaman');
+      return;
+    }
+    
+    // Redirect ke route download backend
+    window.location.href = '/download/' + photoId;
   }
 </script>
