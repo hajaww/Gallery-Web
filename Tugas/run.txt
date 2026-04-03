@@ -2,6 +2,9 @@ chmod +x xampp-linux-x64-8.2.4-0-installer.run
 sudo ./xampp-linux-x64-8.2.4-0-installer.run
 sudo /opt/lampp/lampp startmysql
 
+python3 -m venv venv (Create virtual environment)
+pip install -r requirement.txt
+
 navigate project and then
 sudo /opt/lampp/bin/mysql -u root -e "CREATE DATABASE IF NOT EXISTS galeri_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
 sudo /opt/lampp/bin/mysql -u root galeri_db < database.sql
