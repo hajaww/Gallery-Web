@@ -1,5 +1,30 @@
 {% extends "base.html" %} {% block title %}Upload Foto - Lensa{% endblock %} {%
-block content %}
+block extra_css %}
+<style>
+  /* Fade-in animation untuk form */
+  @keyframes fadeInScale {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  .shadow-xl,
+  .rounded-2xl {
+    animation: fadeInScale 0.4s ease-out backwards;
+  }
+
+  /* Smooth transitions untuk inputs */
+  input,
+  textarea {
+    transition: all 0.3s ease;
+  }
+</style>
+{% endblock %} {% block content %}
 <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
   <div class="bg-white dark:bg-dark-800 rounded-2xl shadow-xl p-8">
     <div class="text-center mb-8">
@@ -21,7 +46,7 @@ block content %}
 
       <!-- Upload Area -->
       <div
-        class="border-2 border-dashed border-gray-300 dark:border-dark-600 rounded-xl p-8 text-center hover:border-indigo-500 transition-colors"
+        class="border-2 border-dashed border-gray-300 dark:border-dark-600 rounded-xl p-8 text-center hover:border-blue-500 transition-colors"
         id="dropZone"
       >
         <input
@@ -51,12 +76,21 @@ block content %}
             Supported: .jpg, .png, .webp (Max 16MB)
           </p>
         </label>
-        
+
         <!-- Error Message Container -->
-        <div id="fileError" class="hidden mt-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-300 dark:border-red-800 rounded-lg">
+        <div
+          id="fileError"
+          class="hidden mt-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-300 dark:border-red-800 rounded-lg"
+        >
           <div class="flex items-center space-x-2">
-            <span class="material-icons-round text-red-600 dark:text-red-400 text-sm">error</span>
-            <p id="fileErrorText" class="text-red-600 dark:text-red-400 text-sm font-medium"></p>
+            <span
+              class="material-icons-round text-red-600 dark:text-red-400 text-sm"
+              >error</span
+            >
+            <p
+              id="fileErrorText"
+              class="text-red-600 dark:text-red-400 text-sm font-medium"
+            ></p>
           </div>
         </div>
 
@@ -99,7 +133,7 @@ block content %}
           type="text"
           name="title"
           required
-          class="w-full px-4 py-3 border border-gray-300 dark:border-dark-600 bg-white dark:bg-dark-700 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          class="w-full px-4 py-3 border border-gray-300 dark:border-dark-600 bg-white dark:bg-dark-700 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           placeholder="Contoh: Sunset di Pantai"
           value="{{ photo.title if photo else request.form.get('title', '') }}"
         />
@@ -113,7 +147,7 @@ block content %}
         <textarea
           name="description"
           rows="4"
-          class="w-full px-4 py-3 border border-gray-300 dark:border-dark-600 bg-white dark:bg-dark-700 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          class="w-full px-4 py-3 border border-gray-300 dark:border-dark-600 bg-white dark:bg-dark-700 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           placeholder="Ceritakan tentang foto ini..."
         >
 {{ photo.description if photo else request.form.get('description', '') }}</textarea
@@ -129,7 +163,7 @@ block content %}
         </a>
         <button
           type="submit"
-          class="flex-1 px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg font-semibold hover:from-indigo-700 hover:to-purple-700"
+          class="flex-1 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg font-semibold hover:from-blue-700 hover:to-blue-800"
         >
           {{ 'Update Foto' if photo else 'Upload Foto' }}
         </button>
@@ -145,26 +179,26 @@ block content %}
 
   // Format ukuran file ke MB
   function formatFileSize(bytes) {
-    return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
+    return (bytes / (1024 * 1024)).toFixed(2) + " MB";
   }
 
   // Tampilkan error
   function showFileError(message) {
-    const errorDiv = document.getElementById('fileError');
-    const errorText = document.getElementById('fileErrorText');
+    const errorDiv = document.getElementById("fileError");
+    const errorText = document.getElementById("fileErrorText");
     errorText.textContent = message;
-    errorDiv.classList.remove('hidden');
-    
+    errorDiv.classList.remove("hidden");
+
     // Auto hide setelah 5 detik
     setTimeout(() => {
-      errorDiv.classList.add('hidden');
+      errorDiv.classList.add("hidden");
     }, 5000);
   }
 
   // Sembunyikan error
   function hideFileError() {
-    const errorDiv = document.getElementById('fileError');
-    errorDiv.classList.add('hidden');
+    const errorDiv = document.getElementById("fileError");
+    errorDiv.classList.add("hidden");
   }
 
   // Validasi file
@@ -178,22 +212,26 @@ block content %}
 
     // Cek ukuran file
     if (file.size > MAX_FILE_SIZE) {
-      showFileError(`Ukuran file terlalu besar! Maksimal ${MAX_FILE_SIZE_MB}MB. Ukuran file Anda: ${formatFileSize(file.size)}`);
+      showFileError(
+        `Ukuran file terlalu besar! Maksimal ${MAX_FILE_SIZE_MB}MB. Ukuran file Anda: ${formatFileSize(file.size)}`,
+      );
       return false;
     }
 
     // Cek ekstensi file
-    const allowedExtensions = ['jpg', 'jpeg', 'png', 'webp'];
-    const fileExtension = file.name.split('.').pop().toLowerCase();
-    
+    const allowedExtensions = ["jpg", "jpeg", "png", "webp"];
+    const fileExtension = file.name.split(".").pop().toLowerCase();
+
     if (!allowedExtensions.includes(fileExtension)) {
-      showFileError(`Format file tidak didukung! Format yang didukung: ${allowedExtensions.join(', ')}`);
+      showFileError(
+        `Format file tidak didukung! Format yang didukung: ${allowedExtensions.join(", ")}`,
+      );
       return false;
     }
 
     // Cek apakah file kosong
     if (file.size === 0) {
-      showFileError('File kosong atau rusak!');
+      showFileError("File kosong atau rusak!");
       return false;
     }
 
@@ -210,7 +248,7 @@ block content %}
       // Validasi file sebelum preview
       if (!validateFile(file)) {
         // Clear input jika validasi gagal
-        input.value = '';
+        input.value = "";
         return;
       }
 
@@ -230,11 +268,11 @@ block content %}
   }
 
   // Validasi saat form submit
-  document.addEventListener('DOMContentLoaded', function() {
-    const form = document.querySelector('form');
-    const photoInput = document.getElementById('photoInput');
+  document.addEventListener("DOMContentLoaded", function () {
+    const form = document.querySelector("form");
+    const photoInput = document.getElementById("photoInput");
 
-    form.addEventListener('submit', function(e) {
+    form.addEventListener("submit", function (e) {
       // Hanya validasi jika ada file yang dipilih (untuk upload baru)
       if (photoInput.files && photoInput.files[0]) {
         if (!validateFile(photoInput.files[0])) {
@@ -245,9 +283,9 @@ block content %}
     });
 
     // Drag and drop support
-    const dropZone = document.getElementById('dropZone');
+    const dropZone = document.getElementById("dropZone");
 
-    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+    ["dragenter", "dragover", "dragleave", "drop"].forEach((eventName) => {
       dropZone.addEventListener(eventName, preventDefaults, false);
     });
 
@@ -256,19 +294,27 @@ block content %}
       e.stopPropagation();
     }
 
-    ['dragenter', 'dragover'].forEach(eventName => {
+    ["dragenter", "dragover"].forEach((eventName) => {
       dropZone.addEventListener(eventName, () => {
-        dropZone.classList.add('border-indigo-500', 'bg-indigo-50', 'dark:bg-indigo-900/10');
+        dropZone.classList.add(
+          "border-blue-500",
+          "bg-blue-50",
+          "dark:bg-blue-900/10",
+        );
       });
     });
 
-    ['dragleave', 'drop'].forEach(eventName => {
+    ["dragleave", "drop"].forEach((eventName) => {
       dropZone.addEventListener(eventName, () => {
-        dropZone.classList.remove('border-indigo-500', 'bg-indigo-50', 'dark:bg-indigo-900/10');
+        dropZone.classList.remove(
+          "border-blue-500",
+          "bg-blue-50",
+          "dark:bg-blue-900/10",
+        );
       });
     });
 
-    dropZone.addEventListener('drop', function(e) {
+    dropZone.addEventListener("drop", function (e) {
       const files = e.dataTransfer.files;
       if (files && files[0]) {
         photoInput.files = files;

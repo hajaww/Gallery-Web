@@ -1,5 +1,23 @@
 {% extends "base.html" %} {% block title %}Edit Profil - Lensa{% endblock %} {%
-block content %}
+block extra_css %}
+<style>
+  /* Smooth fade-in untuk edit profile form */
+  @keyframes fadeInProfile {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .shadow-xl {
+    animation: fadeInProfile 0.5s ease-out backwards;
+  }
+</style>
+{% endblock %} {% block content %}
 <div
   class="min-h-[80vh] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8"
 >
@@ -10,7 +28,7 @@ block content %}
     <div class="text-center mb-8">
       <div class="flex justify-center mb-4">
         <div
-          class="w-20 h-20 bg-indigo-600 rounded-full flex items-center justify-center text-white font-bold text-3xl"
+          class="w-20 h-20 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold text-3xl"
         >
           {{ current_user.name[0].upper() }}
         </div>
@@ -46,7 +64,7 @@ block content %}
             name="name"
             required
             value="{{ current_user.name }}"
-            class="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-dark-600 bg-white dark:bg-dark-700 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+            class="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-dark-600 bg-white dark:bg-dark-700 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
         </div>
       </div>
@@ -66,7 +84,7 @@ block content %}
             name="email"
             required
             value="{{ current_user.email }}"
-            class="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-dark-600 bg-gray-50 dark:bg-dark-700 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+            class="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-dark-600 bg-gray-50 dark:bg-dark-700 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             disabled
           />
         </div>
@@ -84,7 +102,7 @@ block content %}
         </a>
         <button
           type="submit"
-          class="flex-1 px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg font-semibold hover:from-indigo-700 hover:to-purple-700 transition"
+          class="flex-1 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg font-semibold hover:from-blue-700 hover:to-blue-800 transition"
         >
           Simpan Perubahan
         </button>
@@ -95,7 +113,7 @@ block content %}
     <p class="text-center mt-6">
       <a
         href="{{ url_for('my_photos') }}"
-        class="text-indigo-600 dark:text-indigo-400 font-medium hover:text-indigo-800 dark:hover:text-indigo-300 text-sm"
+        class="text-blue-600 dark:text-blue-400 font-medium hover:text-blue-800 dark:hover:text-blue-300 text-sm"
       >
         ← Kembali ke Foto Saya
       </a>

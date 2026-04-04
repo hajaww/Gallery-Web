@@ -7,8 +7,7 @@
       <!-- Logo -->
       <div class="flex-shrink-0">
         <a href="{{ url_for('index') }}" class="flex items-center space-x-2">
-          <span
-            class="material-icons-round text-indigo-600 dark:text-indigo-400"
+          <span class="material-icons-round text-blue-600 dark:text-blue-400"
             >photo_camera</span
           >
           <span class="text-xl font-bold text-gray-900 dark:text-white"
@@ -22,7 +21,7 @@
         <!-- Explore - Active jika di index -->
         <a
           href="{{ url_for('index') }}"
-          class="font-medium pb-1 transition {{ 'text-indigo-600 dark:text-indigo-400 border-b-2 border-indigo-600' if request.endpoint == 'index' else 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white' }}"
+          class="font-medium pb-1 transition {{ 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-600' if request.endpoint == 'index' else 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white' }}"
         >
           Explore
         </a>
@@ -30,7 +29,7 @@
         <!-- Upload - Active jika di upload -->
         <a
           href="{{ url_for('upload') }}"
-          class="font-medium pb-1 transition {{ 'text-indigo-600 dark:text-indigo-400 border-b-2 border-indigo-600' if request.endpoint == 'upload' else 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white' }}"
+          class="font-medium pb-1 transition {{ 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-600' if request.endpoint == 'upload' else 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white' }}"
         >
           Upload
         </a>
@@ -38,7 +37,7 @@
         <!-- Foto Saya - Active jika di my_photos atau edit_photo -->
         <a
           href="{{ url_for('my_photos') }}"
-          class="font-medium pb-1 transition {{ 'text-indigo-600 dark:text-indigo-400 border-b-2 border-indigo-600' if request.endpoint in ['my_photos', 'edit_photo'] else 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white' }}"
+          class="font-medium pb-1 transition {{ 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-600' if request.endpoint in ['my_photos', 'edit_photo'] else 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white' }}"
         >
           Foto Saya
         </a>
@@ -67,7 +66,7 @@
             class="flex items-center space-x-2 focus:outline-none"
           >
             <div
-              class="w-8 h-8 bg-indigo-600 rounded-full flex items-center justify-center text-white font-semibold"
+              class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white font-semibold"
             >
               {{ current_user.name[0].upper() }}
             </div>
@@ -83,14 +82,14 @@
           >
             <a
               href="{{ url_for('edit_profile') }}"
-              class="block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-dark-600 flex items-center space-x-2 {{ 'text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-dark-600' if request.endpoint == 'edit_profile' else 'text-gray-700 dark:text-gray-300' }}"
+              class="block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-dark-600 flex items-center space-x-2 {{ 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-dark-600' if request.endpoint == 'edit_profile' else 'text-gray-700 dark:text-gray-300' }}"
             >
               <span class="material-icons-round text-sm">edit</span>
               <span>Edit Profil</span>
             </a>
             <a
               href="{{ url_for('my_photos') }}"
-              class="block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-dark-600 flex items-center space-x-2 md:hidden {{ 'text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-dark-600' if request.endpoint in ['my_photos', 'edit_photo'] else 'text-gray-700 dark:text-gray-300' }}"
+              class="block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-dark-600 flex items-center space-x-2 md:hidden {{ 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-dark-600' if request.endpoint in ['my_photos', 'edit_photo'] else 'text-gray-700 dark:text-gray-300' }}"
             >
               <span class="material-icons-round text-sm">photo_library</span>
               <span>Foto Saya</span>
@@ -109,14 +108,14 @@
         <!-- Login - Active jika di login -->
         <a
           href="{{ url_for('login') }}"
-          class="font-medium {{ 'text-indigo-600 dark:text-indigo-400' if request.endpoint == 'login' else 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white' }}"
+          class="font-medium {{ 'text-blue-600 dark:text-blue-400' if request.endpoint == 'login' else 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white' }}"
         >
           Sign In
         </a>
         <!-- Register - Active jika di register -->
         <a
           href="{{ url_for('register') }}"
-          class="bg-indigo-600 text-white px-5 py-2.5 rounded-full hover:bg-indigo-700 font-medium transition {{ 'ring-2 ring-indigo-300 ring-offset-2 dark:ring-offset-dark-800' if request.endpoint == 'register' else '' }}"
+          class="bg-blue-600 text-white px-5 py-2.5 rounded-full hover:bg-blue-700 font-medium transition {{ 'ring-2 ring-blue-300 ring-offset-2 dark:ring-offset-dark-800' if request.endpoint == 'register' else '' }}"
         >
           Register
         </a>
@@ -178,5 +177,49 @@
     if (dropdown && !dropdown.contains(event.target) && !button) {
       dropdown.classList.add("hidden");
     }
+  });
+
+  // Smooth Navigation Handler
+  // Intercept internal links dan tambahkan smooth transition
+  document.addEventListener("DOMContentLoaded", function () {
+    const internalLinks = document.querySelectorAll('a[href^="/"]');
+
+    internalLinks.forEach((link) => {
+      link.addEventListener("click", function (e) {
+        const href = this.getAttribute("href");
+
+        // Skip jika link punya modifier keys atau target blank
+        if (e.ctrlKey || e.metaKey || e.shiftKey || this.target === "_blank") {
+          return;
+        }
+
+        // Skip jika href khusus
+        if (
+          href === "#" ||
+          href.startsWith("javascript:") ||
+          href.includes("?")
+        ) {
+          return;
+        }
+
+        // Tambahkan smooth fade-out effect sebelum navigate
+        const body = document.body;
+        body.style.transition = "opacity 0.2s ease";
+        body.style.opacity = "0.7";
+
+        // Delay sedikit untuk effect visual
+        setTimeout(() => {
+          window.location.href = href;
+        }, 150);
+
+        e.preventDefault();
+      });
+    });
+
+    // Scroll to top saat halaman baru load
+    window.scrollTo({
+      top: 0,
+      behavior: "instant",
+    });
   });
 </script>

@@ -43,7 +43,7 @@
         class="flex items-center space-x-3 mb-6 pb-6 border-b border-gray-200 dark:border-dark-700"
       >
         <div
-          class="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-lg"
+          class="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-lg"
           id="modalAvatar"
         ></div>
         <div>
@@ -79,7 +79,7 @@
           <span id="modalLikeCount" class="font-semibold"></span>
         </button>
         <button
-          onclick="sharePhoto()"
+          id="modalShareBtn"
           class="flex-1 flex items-center justify-center space-x-2 px-4 py-3 bg-gray-100 dark:bg-dark-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-dark-600 transition"
         >
           <span class="material-icons-round">share</span>
@@ -89,8 +89,8 @@
 
       <!-- Download -->
       <button
-        onclick="downloadPhoto()"
-        class="w-full flex items-center justify-center space-x-2 px-4 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition font-semibold"
+        id="modalDownloadBtn"
+        class="w-full flex items-center justify-center space-x-2 px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-semibold"
       >
         <span class="material-icons-round">download</span>
         <span>Unduh Foto</span>
@@ -100,34 +100,239 @@
 </div>
 
 <script>
-  // Fungsi Share
-  function sharePhoto() {
-    const title = document.getElementById("modalTitle").textContent;
-    const url = window.location.href;
-
-    if (navigator.share) {
-      navigator.share({
-        title: title,
-        url: url,
-      });
-    } else {
-      // Fallback: copy link
-      navigator.clipboard.writeText(url);
-      alert("Link disalin ke clipboard!");
-    }
-  }
-
-  // Fungsi Download - Menggunakan route backend untuk download yang proper
-  function downloadPhoto() {
-    // Gunakan variabel currentPhotoId yang sudah ada di index.html
+  // Fungsi Share - menggunakan global currentPhotoId dan currentPhotoTitle dari index.html
+  function handleShare() {
     const photoId = window.currentPhotoId;
-    
+    const photoTitle =
+      window.currentPhotoTitle ||
+      document.getElementById("modalTitle").textContent;
+
     if (!photoId) {
-      alert('Terjadi kesalahan, silakan refresh halaman');
+      showNotification("Terjadi kesalahan, silakan refresh halaman", "error");
       return;
     }
-    
-    // Redirect ke route download backend
-    window.location.href = '/download/' + photoId;
+
+    // Buat URL absolut untuk share
+    const shareUrl = window.location.origin + "/photo/" + photoId;
+
+    // Cek apakah browser support Web Share API
+    if (navigator.share) {
+      navigator
+        .share({
+          title: photoTitle,
+          text: "Lihat foto menarik ini di Lensa!",
+          url: shareUrl,
+        })
+        .then(() => {
+          showNotification("Berhasil dibagikan!", "success");
+        })
+        .catch((error) => {
+          if (error.name !== "AbortError") {
+            // Fallback ke clipboard jika share gagal/dibatalkan
+            copyToClipboard(shareUrl);
+          }
+        });
+    } else {
+      // Fallback: copy link ke clipboard
+      copyToClipboard(shareUrl);
+    }
   }
+
+  // Fungsi Download - menggunakan global currentPhotoId dari index.html
+  function handleDownload() {
+    const photoId = window.currentPhotoId;
+
+    if (!photoId) {
+      showNotification("Terjadi kesalahan, silakan refresh halaman", "error");
+      return;
+    }
+
+    // Tampilkan notifikasi sedang mendownload
+    showNotification("Mengunduh foto...", "info");
+
+    // Redirect ke route download backend
+    window.location.href = "/download/" + photoId;
+  }
+
+  // Fungsi helper untuk copy ke clipboard
+  function copyToClipboard(text) {
+    navigator.clipboard
+      .writeText(text)
+      .then(() => {
+        showNotification("Link berhasil disalin ke clipboard!", "success");
+      })
+      .catch((err) => {
+        console.error("Gagal menyalin:", err);
+        // Fallback untuk browser lama
+        fallbackCopyToClipboard(text);
+      });
+  }
+
+  // Fallback copy untuk browser lama
+  function fallbackCopyToClipboard(text) {
+    const tempInput = document.createElement("input");
+    tempInput.value = text;
+    tempInput.style.position = "fixed";
+    tempInput.style.opacity = "0";
+    document.body.appendChild(tempInput);
+    tempInput.select();
+    try {
+      document.execCommand("copy");
+      showNotification("Link berhasil disalin ke clipboard!", "success");
+    } catch (err) {
+      showNotification("Gagal menyalin link", "error");
+    }
+    document.body.removeChild(tempInput);
+  }
+
+  // Fungsi untuk menampilkan notifikasi toast
+  function showNotification(message, type = "info") {
+    // Hapus notifikasi yang sudah ada
+    const existingNotification = document.querySelector(".custom-notification");
+    if (existingNotification) {
+      existingNotification.remove();
+    }
+
+    // Buat notifikasi baru
+    const notification = document.createElement("div");
+    notification.className = `custom-notification fixed top-4 right-4 z-[60] px-6 py-4 rounded-lg shadow-lg flex items-center space-x-3 animate-fade-in`;
+
+    // Styling berdasarkan tipe
+    if (type === "success") {
+      notification.classList.add("bg-green-500", "text-white");
+    } else if (type === "error") {
+      notification.classList.add("bg-red-500", "text-white");
+    } else {
+      notification.classList.add("bg-blue-500", "text-white");
+    }
+
+    const iconMap = {
+      success: "check_circle",
+      error: "error",
+      info: "info",
+    };
+
+    notification.innerHTML = `
+      <span class="material-icons-round text-sm">${iconMap[type] || iconMap.info}</span>
+      <span class="font-medium text-sm">${message}</span>
+      <button onclick="this.parentElement.remove()" class="ml-auto hover:opacity-80">
+        <span class="material-icons-round text-sm">close</span>
+      </button>
+    `;
+
+    document.body.appendChild(notification);
+
+    // Auto remove setelah 3 detik
+    setTimeout(() => {
+      if (notification.parentElement) {
+        notification.style.opacity = "0";
+        notification.style.transition = "opacity 0.3s";
+        setTimeout(() => notification.remove(), 300);
+      }
+    }, 3000);
+  }
+
+  // Setup event listeners setelah DOM loaded
+  document.addEventListener("DOMContentLoaded", function () {
+    // Setup Share button
+    const shareBtn = document.getElementById("modalShareBtn");
+    if (shareBtn) {
+      shareBtn.addEventListener("click", function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        handleShare();
+      });
+    }
+
+    // Setup Download button
+    const downloadBtn = document.getElementById("modalDownloadBtn");
+    if (downloadBtn) {
+      downloadBtn.addEventListener("click", function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        handleDownload();
+      });
+    }
+  });
+</script>
+
+<style>
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  .animate-fade-in {
+    animation: fadeIn 0.3s ease-out;
+  }
+
+  /* Smooth modal transitions */
+  #photoModal {
+    transition:
+      opacity 0.3s ease,
+      visibility 0.3s ease;
+  }
+  #photoModal.hidden {
+    opacity: 0;
+    visibility: hidden;
+  }
+  #photoModal:not(.hidden) {
+    opacity: 1;
+    visibility: visible;
+  }
+</style>
+
+<!-- Scroll to Top Button -->
+<button
+  id="scrollTopBtn"
+  onclick="scrollToTop()"
+  class="fixed bottom-8 right-8 z-40 bg-blue-600 text-white p-3 rounded-full shadow-lg hover:bg-blue-700 transition-all duration-300 opacity-0 translate-y-10 pointer-events-none"
+  aria-label="Scroll to top"
+>
+  <span class="material-icons-round text-2xl">arrow_upward</span>
+</button>
+
+<script>
+  // Scroll to top function
+  function scrollToTop() {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  }
+
+  // Show/hide scroll button based on scroll position
+  window.addEventListener("scroll", function () {
+    const scrollBtn = document.getElementById("scrollTopBtn");
+    if (scrollBtn) {
+      if (window.scrollY > 300) {
+        scrollBtn.classList.remove(
+          "opacity-0",
+          "translate-y-10",
+          "pointer-events-none",
+        );
+        scrollBtn.classList.add(
+          "opacity-100",
+          "translate-y-0",
+          "pointer-events-auto",
+        );
+      } else {
+        scrollBtn.classList.add(
+          "opacity-0",
+          "translate-y-10",
+          "pointer-events-none",
+        );
+        scrollBtn.classList.remove(
+          "opacity-100",
+          "translate-y-0",
+          "pointer-events-auto",
+        );
+      }
+    }
+  });
 </script>

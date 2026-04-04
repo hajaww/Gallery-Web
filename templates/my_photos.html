@@ -1,5 +1,45 @@
 {% extends "base.html" %} {% block title %}Foto Saya - Lensa{% endblock %} {%
-block content %}
+block extra_css %}
+<style>
+  /* Smooth transitions untuk tabel dan cards */
+  tbody tr {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Fade-in animation untuk cards */
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .shadow-md,
+  .rounded-xl {
+    animation: fadeInUp 0.4s ease-out backwards;
+  }
+
+  table tbody tr:nth-child(1) {
+    animation-delay: 0.05s;
+  }
+  table tbody tr:nth-child(2) {
+    animation-delay: 0.1s;
+  }
+  table tbody tr:nth-child(3) {
+    animation-delay: 0.15s;
+  }
+  table tbody tr:nth-child(4) {
+    animation-delay: 0.2s;
+  }
+  table tbody tr:nth-child(5) {
+    animation-delay: 0.25s;
+  }
+</style>
+{% endblock %} {% block content %}
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
   <!-- Header -->
   <div
@@ -15,7 +55,7 @@ block content %}
     </div>
     <a
       href="{{ url_for('upload') }}"
-      class="mt-4 md:mt-0 inline-flex items-center space-x-2 bg-indigo-600 text-white px-6 py-3 rounded-full hover:bg-indigo-700 transition font-medium"
+      class="mt-4 md:mt-0 inline-flex items-center space-x-2 bg-blue-600 text-white px-6 py-3 rounded-full hover:bg-blue-700 transition font-medium"
     >
       <span class="material-icons-round text-sm">add_a_photo</span>
       <span>Upload Foto Baru</span>
@@ -28,9 +68,9 @@ block content %}
       class="bg-white dark:bg-dark-800 rounded-xl shadow-md p-6 flex items-center space-x-4"
     >
       <div
-        class="w-12 h-12 bg-indigo-100 dark:bg-indigo-900/30 rounded-full flex items-center justify-center"
+        class="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center"
       >
-        <span class="material-icons-round text-indigo-600 dark:text-indigo-400"
+        <span class="material-icons-round text-blue-600 dark:text-blue-400"
           >photo_library</span
         >
       </div>
@@ -189,7 +229,7 @@ block content %}
               </p>
               <a
                 href="{{ url_for('upload') }}"
-                class="inline-block mt-4 bg-indigo-600 text-white px-6 py-2 rounded-full hover:bg-indigo-700"
+                class="inline-block mt-4 bg-blue-600 text-white px-6 py-2 rounded-full hover:bg-blue-700"
                 >Upload Foto</a
               >
             </td>
@@ -212,7 +252,7 @@ block content %}
       {% endif %} {% for page_num in pagination.iter_pages(left_edge=1,
       right_edge=1, left_current=2, right_current=2) %} {% if page_num %} {% if
       page_num == pagination.page %}
-      <span class="px-4 py-2 bg-indigo-600 text-white rounded-lg font-medium">
+      <span class="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium">
         {{ page_num }}
       </span>
       {% else %}
