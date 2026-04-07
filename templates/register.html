@@ -1,174 +1,331 @@
 {% extends "base.html" %} {% block title %}Daftar - Lensa{% endblock %} {% block
 extra_css %}
 <style>
-  /* Smooth fade-in untuk register form */
-  @keyframes fadeInRegister {
+  @keyframes fadeInScale {
     from {
       opacity: 0;
-      transform: translateY(30px);
+      transform: scale(0.95) translateY(20px);
     }
     to {
       opacity: 1;
-      transform: translateY(0);
+      transform: scale(1) translateY(0);
     }
   }
 
-  .shadow-xl {
-    animation: fadeInRegister 0.5s ease-out backwards;
+  .register-card {
+    animation: fadeInScale 0.6s ease-out;
+  }
+
+  .auth-pattern {
+    background-image:
+      radial-gradient(
+        circle at 75% 25%,
+        rgba(147, 51, 234, 0.1) 0%,
+        transparent 50%
+      ),
+      radial-gradient(
+        circle at 25% 75%,
+        rgba(245, 158, 11, 0.1) 0%,
+        transparent 50%
+      );
+  }
+
+  input:focus {
+    box-shadow: 0 0 0 3px rgba(147, 51, 234, 0.1);
+  }
+
+  /* Password requirement styles */
+  .requirement-met {
+    color: #34d399 !important;
+  }
+
+  .requirement-met .material-icons-round {
+    color: #34d399 !important;
   }
 </style>
 {% endblock %} {% block content %}
-<div
-  class="min-h-[80vh] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8"
->
-  <div
-    class="max-w-md w-full bg-white dark:bg-dark-800 rounded-2xl shadow-xl p-8"
-  >
-    <!-- Logo -->
-    <div class="text-center mb-8">
-      <div class="flex justify-center mb-4">
-        <span
-          class="material-icons-round text-5xl text-blue-600 dark:text-blue-400"
-          >photo_camera</span
-        >
-      </div>
-      <h2 class="text-2xl font-bold text-gray-800 dark:text-white">Lensa</h2>
-      <p class="text-gray-500 dark:text-gray-400 text-sm">
-        The Digital Curator
-      </p>
-    </div>
+<div class="min-h-screen flex auth-pattern">
+  <!-- Left Side - Decorative -->
+  <div class="hidden lg:flex lg:w-1/2 relative overflow-hidden">
+    <div class="absolute inset-0 gradient-animated opacity-30"></div>
 
-    <!-- Form -->
-    <form method="POST" action="{{ url_for('register') }}" class="space-y-5">
-      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+    <div
+      class="absolute top-32 left-16 w-80 h-80 bg-accent-500/20 rounded-full blur-3xl animate-float"
+    ></div>
+    <div
+      class="absolute bottom-32 right-16 w-96 h-96 bg-primary-500/15 rounded-full blur-3xl animate-float-delay"
+    ></div>
 
-      <div>
-        <label
-          class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-          >Nama Lengkap</label
-        >
-        <div class="relative">
-          <span
-            class="material-icons-round absolute left-3 top-3 text-gray-400 dark:text-gray-500 text-sm"
-            >person</span
-          >
-          <input
-            type="text"
-            name="name"
-            required
-            class="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-dark-600 bg-white dark:bg-dark-700 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            placeholder="John Doe"
-            value="{{ request.form.get('name', '') }}"
-          />
-        </div>
-      </div>
-
-      <div>
-        <label
-          class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-          >Email</label
-        >
-        <div class="relative">
-          <span
-            class="material-icons-round absolute left-3 top-3 text-gray-400 dark:text-gray-500 text-sm"
-            >mail</span
-          >
-          <input
-            type="email"
-            name="email"
-            required
-            class="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-dark-600 bg-white dark:bg-dark-700 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            placeholder="nama@email.com"
-            value="{{ request.form.get('email', '') }}"
-          />
-        </div>
-      </div>
-
-      <div>
-        <label
-          class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-          >Password</label
-        >
-        <div class="relative">
-          <span
-            class="material-icons-round absolute left-3 top-3 text-gray-400 dark:text-gray-500 text-sm"
-            >lock</span
-          >
-          <input
-            type="password"
-            name="password"
-            id="password"
-            required
-            minlength="8"
-            class="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-dark-600 bg-white dark:bg-dark-700 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            placeholder="••••••••"
-            oninput="checkPasswordStrength()"
-          />
-        </div>
-        <ul class="mt-2 text-xs text-gray-500 dark:text-gray-400 space-y-1">
-          <li id="req-length" class="flex items-center">
-            <span class="material-icons-round text-xs mr-1">close</span> Minimal
-            8 karakter
-          </li>
-          <li id="req-upper" class="flex items-center">
-            <span class="material-icons-round text-xs mr-1">close</span> Minimal
-            1 huruf kapital
-          </li>
-          <li id="req-digit" class="flex items-center">
-            <span class="material-icons-round text-xs mr-1">close</span> Minimal
-            1 angka
-          </li>
-        </ul>
-        <div class="mt-2">
-          <div class="flex items-center space-x-2">
+    <div
+      class="relative z-10 flex flex-col justify-center items-center w-full p-12"
+    >
+      <div class="max-w-lg text-center">
+        <div class="mb-8">
+          <div class="relative inline-block">
             <div
-              class="flex-1 h-2 bg-gray-200 dark:bg-dark-600 rounded-full overflow-hidden"
+              class="absolute inset-0 bg-accent-500 blur-3xl opacity-40"
+            ></div>
+            <img
+              src="{{ url_for('static', filename='lensalogo.png') }}"
+              alt="Lensa Logo"
+              class="relative w-32 h-32 object-contain mx-auto"
+            />
+          </div>
+        </div>
+
+        <h1 class="text-5xl font-black text-white mb-6">
+          Bergabung dengan <span class="text-gradient-accent">Lensa</span>
+        </h1>
+        <p class="text-xl text-gray-300 mb-12 leading-relaxed">
+          Buat akun gratis dan mulai perjalanan kreatif Anda bersama komunitas
+          fotografer.
+        </p>
+
+        <!-- Benefits -->
+        <div class="space-y-5 text-left">
+          <div
+            class="flex items-center space-x-4 glass p-4 rounded-xl border border-gray-700/30"
+          >
+            <div
+              class="w-12 h-12 rounded-lg bg-emerald-500/20 flex items-center justify-center flex-shrink-0"
             >
-              <div
-                id="strengthBar"
-                class="h-full bg-gray-400 transition-all"
-                style="width: 0%"
-              ></div>
+              <span class="material-icons-round text-emerald-400"
+                >check_circle</span
+              >
             </div>
-            <span
-              id="strengthText"
-              class="text-xs text-gray-500 dark:text-gray-400"
-              >Kekuatan</span
+            <div>
+              <h3 class="font-bold text-white mb-1">100% Gratis</h3>
+              <p class="text-sm text-gray-400">Tidak ada biaya tersembunyi</p>
+            </div>
+          </div>
+
+          <div
+            class="flex items-center space-x-4 glass p-4 rounded-xl border border-gray-700/30"
+          >
+            <div
+              class="w-12 h-12 rounded-lg bg-blue-500/20 flex items-center justify-center flex-shrink-0"
             >
+              <span class="material-icons-round text-blue-400">storage</span>
+            </div>
+            <div>
+              <h3 class="font-bold text-white mb-1">Unlimited Upload</h3>
+              <p class="text-sm text-gray-400">Upload foto tanpa batas</p>
+            </div>
+          </div>
+
+          <div
+            class="flex items-center space-x-4 glass p-4 rounded-xl border border-gray-700/30"
+          >
+            <div
+              class="w-12 h-12 rounded-lg bg-pink-500/20 flex items-center justify-center flex-shrink-0"
+            >
+              <span class="material-icons-round text-pink-400">groups</span>
+            </div>
+            <div>
+              <h3 class="font-bold text-white mb-1">Komunitas Aktif</h3>
+              <p class="text-sm text-gray-400">
+                Terhubung dengan fotografer lain
+              </p>
+            </div>
           </div>
         </div>
       </div>
+    </div>
+  </div>
 
-      <div class="flex items-start">
-        <input
-          type="checkbox"
-          required
-          class="w-4 h-4 text-blue-600 border-gray-300 dark:border-dark-600 rounded focus:ring-blue-500 mt-1"
-        />
-        <span class="ml-2 text-sm text-gray-600 dark:text-gray-400">
-          Saya setuju dengan
-          <a href="#" class="text-blue-600 dark:text-blue-400 hover:underline"
-            >Syarat & Ketentuan</a
-          >
-        </span>
+  <!-- Right Side - Register Form -->
+  <div class="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12">
+    <div class="w-full max-w-md register-card">
+      <!-- Mobile Logo -->
+      <div class="lg:hidden text-center mb-8">
+        <div class="inline-flex items-center space-x-3 mb-4">
+          <img
+            src="{{ url_for('static', filename='lensalogo.png') }}"
+            alt="Lensa Logo"
+            class="w-12 h-12 object-contain"
+          />
+          <span class="text-3xl font-bold text-gradient">Lensa</span>
+        </div>
+        <p class="text-gray-400">The Digital Curator</p>
       </div>
 
-      <button
-        type="submit"
-        class="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white py-3 rounded-lg font-semibold hover:from-blue-700 hover:to-blue-800 transition"
-      >
-        Daftar
-      </button>
-    </form>
+      <!-- Header -->
+      <div class="mb-8">
+        <h2 class="text-4xl font-black text-white mb-3">Buat Akun</h2>
+        <p class="text-gray-400">Daftar gratis dan mulai berkarya</p>
+      </div>
 
-    <p class="text-center mt-6 text-gray-600 dark:text-gray-400">
-      Sudah punya akun?
-      <a
-        href="{{ url_for('login') }}"
-        class="text-blue-600 dark:text-blue-400 font-semibold hover:text-blue-800 dark:hover:text-blue-300"
-        >Masuk</a
-      >
-    </p>
+      <!-- Form -->
+      <form method="POST" action="{{ url_for('register') }}" class="space-y-5">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+
+        <!-- Name -->
+        <div>
+          <label class="block text-sm font-semibold text-gray-300 mb-3">
+            Nama Lengkap
+          </label>
+          <div class="relative group">
+            <div
+              class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none"
+            >
+              <span
+                class="material-icons-round text-gray-500 group-focus-within:text-primary-400 transition-colors"
+                >person</span
+              >
+            </div>
+            <input
+              type="text"
+              name="name"
+              required
+              class="w-full pl-12 pr-4 py-4 glass border border-gray-600/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-white placeholder-gray-500 transition-all"
+              placeholder="John Doe"
+              value="{{ request.form.get('name', '') }}"
+            />
+          </div>
+        </div>
+
+        <!-- Email -->
+        <div>
+          <label class="block text-sm font-semibold text-gray-300 mb-3">
+            Email
+          </label>
+          <div class="relative group">
+            <div
+              class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none"
+            >
+              <span
+                class="material-icons-round text-gray-500 group-focus-within:text-primary-400 transition-colors"
+                >mail</span
+              >
+            </div>
+            <input
+              type="email"
+              name="email"
+              required
+              class="w-full pl-12 pr-4 py-4 glass border border-gray-600/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-white placeholder-gray-500 transition-all"
+              placeholder="nama@email.com"
+              value="{{ request.form.get('email', '') }}"
+            />
+          </div>
+        </div>
+
+        <!-- Password -->
+        <div>
+          <label class="block text-sm font-semibold text-gray-300 mb-3">
+            Password
+          </label>
+          <div class="relative group">
+            <div
+              class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none"
+            >
+              <span
+                class="material-icons-round text-gray-500 group-focus-within:text-primary-400 transition-colors"
+                >lock</span
+              >
+            </div>
+            <input
+              type="password"
+              name="password"
+              id="password"
+              required
+              minlength="8"
+              class="w-full pl-12 pr-4 py-4 glass border border-gray-600/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-white placeholder-gray-500 transition-all"
+              placeholder="••••••••"
+              oninput="checkPasswordStrength()"
+            />
+          </div>
+
+          <!-- Password Requirements -->
+          <ul class="mt-3 space-y-2 text-xs">
+            <li
+              id="req-length"
+              class="flex items-center text-gray-500 transition-colors"
+            >
+              <span class="material-icons-round text-sm mr-2"
+                >radio_button_unchecked</span
+              >
+              Minimal 8 karakter
+            </li>
+            <li
+              id="req-upper"
+              class="flex items-center text-gray-500 transition-colors"
+            >
+              <span class="material-icons-round text-sm mr-2"
+                >radio_button_unchecked</span
+              >
+              Minimal 1 huruf kapital
+            </li>
+            <li
+              id="req-digit"
+              class="flex items-center text-gray-500 transition-colors"
+            >
+              <span class="material-icons-round text-sm mr-2"
+                >radio_button_unchecked</span
+              >
+              Minimal 1 angka
+            </li>
+          </ul>
+
+          <!-- Strength Bar -->
+          <div class="mt-4">
+            <div class="flex items-center space-x-3">
+              <div
+                class="flex-1 h-2 bg-dark-800 rounded-full overflow-hidden border border-gray-700/30"
+              >
+                <div
+                  id="strengthBar"
+                  class="h-full transition-all duration-500 rounded-full"
+                  style="width: 0%"
+                ></div>
+              </div>
+              <span
+                id="strengthText"
+                class="text-xs text-gray-500 font-medium whitespace-nowrap"
+                >Kekuatan</span
+              >
+            </div>
+          </div>
+        </div>
+
+        <!-- Terms Checkbox -->
+        <div class="flex items-start">
+          <input
+            type="checkbox"
+            required
+            class="w-5 h-5 mt-1 rounded border-gray-600/30 bg-dark-800 text-primary-500 focus:ring-2 focus:ring-primary-500 focus:ring-offset-0 cursor-pointer"
+          />
+          <span class="ml-3 text-sm text-gray-400">
+            Saya setuju dengan
+            <a
+              href="#"
+              class="text-primary-400 hover:text-primary-300 font-medium hover:underline"
+              >Syarat & Ketentuan</a
+            >
+          </span>
+        </div>
+
+        <!-- Submit Button -->
+        <button
+          type="submit"
+          class="w-full relative bg-gradient-to-r from-primary-600 to-primary-700 text-white py-4 rounded-xl font-bold text-lg hover:from-primary-500 hover:to-primary-600 transition-all shadow-lg shadow-primary-500/30 hover:shadow-primary-500/50 overflow-hidden btn-glow"
+        >
+          <span class="relative z-10 flex items-center justify-center gap-2">
+            <span class="material-icons-round">person_add</span>
+            Daftar Sekarang
+          </span>
+        </button>
+      </form>
+
+      <!-- Login Link -->
+      <p class="text-center mt-8 text-gray-400">
+        Sudah punya akun?
+        <a
+          href="{{ url_for('login') }}"
+          class="text-primary-400 font-semibold hover:text-primary-300 transition-colors"
+          >Masuk</a
+        >
+      </p>
+    </div>
   </div>
 </div>
 {% endblock %} {% block extra_js %}
@@ -178,7 +335,6 @@ extra_css %}
     const bar = document.getElementById("strengthBar");
     const text = document.getElementById("strengthText");
 
-    // Update requirement indicators
     const reqLength = document.getElementById("req-length");
     const reqUpper = document.getElementById("req-upper");
     const reqDigit = document.getElementById("req-digit");
@@ -187,7 +343,6 @@ extra_css %}
     const hasUpper = /[A-Z]/.test(password);
     const hasDigit = /[0-9]/.test(password);
 
-    // Update requirement visuals
     updateRequirement(reqLength, hasLength);
     updateRequirement(reqUpper, hasUpper);
     updateRequirement(reqDigit, hasDigit);
@@ -201,29 +356,37 @@ extra_css %}
     bar.style.width = strength + "%";
 
     if (strength <= 25) {
-      bar.className = "h-full bg-red-500 transition-all";
+      bar.className =
+        "h-full bg-gradient-to-r from-red-500 to-red-600 transition-all duration-500 rounded-full";
       text.textContent = "Lemah";
+      text.className = "text-xs text-red-400 font-medium whitespace-nowrap";
     } else if (strength <= 50) {
-      bar.className = "h-full bg-yellow-500 transition-all";
+      bar.className =
+        "h-full bg-gradient-to-r from-yellow-500 to-orange-500 transition-all duration-500 rounded-full";
       text.textContent = "Sedang";
+      text.className = "text-xs text-yellow-400 font-medium whitespace-nowrap";
     } else if (strength <= 75) {
-      bar.className = "h-full bg-blue-500 transition-all";
+      bar.className =
+        "h-full bg-gradient-to-r from-blue-500 to-blue-600 transition-all duration-500 rounded-full";
       text.textContent = "Kuat";
+      text.className = "text-xs text-blue-400 font-medium whitespace-nowrap";
     } else {
-      bar.className = "h-full bg-green-500 transition-all";
+      bar.className =
+        "h-full bg-gradient-to-r from-emerald-500 to-emerald-600 transition-all duration-500 rounded-full";
       text.textContent = "Sangat Kuat";
+      text.className = "text-xs text-emerald-400 font-medium whitespace-nowrap";
     }
   }
 
   function updateRequirement(element, met) {
     const icon = element.querySelector(".material-icons-round");
     if (met) {
-      icon.textContent = "check";
-      element.classList.add("text-green-600");
+      icon.textContent = "check_circle";
+      element.classList.add("requirement-met");
       element.classList.remove("text-gray-500");
     } else {
-      icon.textContent = "close";
-      element.classList.remove("text-green-600");
+      icon.textContent = "radio_button_unchecked";
+      element.classList.remove("requirement-met");
       element.classList.add("text-gray-500");
     }
   }

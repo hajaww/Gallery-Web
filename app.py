@@ -299,17 +299,24 @@ def my_photos():
 def edit_profile():
     if request.method == 'POST':
         name = request.form.get('name')
-        
+
         if not name:
             flash('Nama harus diisi', 'error')
             return redirect(url_for('edit_profile'))
-        
+
         current_user.name = name
-        db.session.commit()
-        
-        flash('Profil berhasil diupdate!', 'success')
+
+        try:
+            db.session.commit()
+            flash('Profil berhasil diupdate!', 'success')
+        except Exception as e:
+            db.session.rollback()
+            app.logger.error(f"Error updating profile: {str(e)}")
+            flash('Terjadi kesalahan saat mengupdate profil', 'error')
+            return redirect(url_for('edit_profile'))
+
         return redirect(url_for('edit_profile'))
-    
+
     return render_template('edit_profile.html')
 
 # Edit Foto
@@ -395,10 +402,10 @@ def delete_photo(photo_id):
     return redirect(url_for('my_photos'))
 
 # Like Foto (AJAX) - 1 User 1 Like & Harus Login
-# Rate limiting: 10 like per menit per user untuk mencegah abuse
+# Rate limiting: 60 like per menit per user untuk mencegah abuse
 @app.route('/like/<int:photo_id>', methods=['POST'])
 @login_required
-@limiter.limit("10 per minute")
+@limiter.limit("60 per minute")
 def like_photo(photo_id):
     photo = Photo.query.get_or_404(photo_id)
     user = current_user

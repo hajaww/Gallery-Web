@@ -1,123 +1,143 @@
 <!-- templates/components/_navbar.html -->
-<nav
-  class="bg-white dark:bg-dark-800 shadow-sm sticky top-0 z-50 transition-colors duration-300"
->
+<nav class="glass sticky top-0 z-50 border-b border-gray-700/30">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="flex justify-between items-center h-16">
+    <div class="flex justify-between items-center h-20">
       <!-- Logo -->
       <div class="flex-shrink-0">
-        <a href="{{ url_for('index') }}" class="flex items-center space-x-2">
-          <span class="material-icons-round text-blue-600 dark:text-blue-400"
-            >photo_camera</span
-          >
-          <span class="text-xl font-bold text-gray-900 dark:text-white"
-            >Lensa</span
-          >
+        <a
+          href="{{ url_for('index') }}"
+          class="flex items-center space-x-3 group"
+        >
+          <div class="relative">
+            <div
+              class="absolute inset-0 bg-primary-500 blur-lg opacity-50 group-hover:opacity-75 transition-opacity"
+            ></div>
+            <img
+              src="{{ url_for('static', filename='lensalogo.png') }}"
+              alt="Lensa Logo"
+              class="relative w-10 h-10 object-contain"
+            />
+          </div>
+          <span class="text-2xl font-bold text-gradient">Lensa</span>
         </a>
       </div>
 
-      <!-- Center Navigation (Desktop) - ACTIVE STATE FIXED -->
-      <div class="hidden md:flex items-center space-x-8">
-        <!-- Explore - Active jika di index -->
+      <!-- Center Navigation (Desktop) -->
+      <div class="hidden md:flex items-center space-x-2">
+        <!-- Explore -->
         <a
           href="{{ url_for('index') }}"
-          class="font-medium pb-1 transition {{ 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-600' if request.endpoint == 'index' else 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white' }}"
+          class="relative px-5 py-2.5 rounded-full font-medium transition-all duration-300 {{ 'bg-primary-500/20 text-primary-300 shadow-lg shadow-primary-500/20' if request.endpoint == 'index' else 'text-gray-300 hover:text-white hover:bg-white/5' }}"
         >
-          Explore
+          <span class="flex items-center space-x-2">
+            <span class="material-icons-round text-lg">explore</span>
+            <span>Explore</span>
+          </span>
         </a>
 
-        <!-- Upload - Active jika di upload -->
+        <!-- Upload -->
         <a
           href="{{ url_for('upload') }}"
-          class="font-medium pb-1 transition {{ 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-600' if request.endpoint == 'upload' else 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white' }}"
+          class="relative px-5 py-2.5 rounded-full font-medium transition-all duration-300 {{ 'bg-primary-500/20 text-primary-300 shadow-lg shadow-primary-500/20' if request.endpoint == 'upload' else 'text-gray-300 hover:text-white hover:bg-white/5' }}"
         >
-          Upload
+          <span class="flex items-center space-x-2">
+            <span class="material-icons-round text-lg">cloud_upload</span>
+            <span>Upload</span>
+          </span>
         </a>
 
-        <!-- Foto Saya - Active jika di my_photos atau edit_photo -->
+        <!-- Foto Saya -->
         <a
           href="{{ url_for('my_photos') }}"
-          class="font-medium pb-1 transition {{ 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-600' if request.endpoint in ['my_photos', 'edit_photo'] else 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white' }}"
+          class="relative px-5 py-2.5 rounded-full font-medium transition-all duration-300 {{ 'bg-primary-500/20 text-primary-300 shadow-lg shadow-primary-500/20' if request.endpoint in ['my_photos', 'edit_photo'] else 'text-gray-300 hover:text-white hover:bg-white/5' }}"
         >
-          Foto Saya
+          <span class="flex items-center space-x-2">
+            <span class="material-icons-round text-lg">photo_library</span>
+            <span>Foto Saya</span>
+          </span>
         </a>
       </div>
 
       <!-- Right Menu -->
       <div class="flex items-center space-x-4">
-        <!-- Dark Mode Toggle -->
-        <button
-          onclick="toggleDarkMode()"
-          class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-dark-700 transition focus:outline-none"
-          aria-label="Toggle Dark Mode"
-        >
-          <span
-            id="darkModeIcon"
-            class="material-icons-round text-gray-600 dark:text-gray-300"
-            >dark_mode</span
-          >
-        </button>
-
         {% if current_user.is_authenticated %}
         <!-- Profile Dropdown -->
         <div class="relative">
           <button
             onclick="toggleDropdown()"
-            class="flex items-center space-x-2 focus:outline-none"
+            class="flex items-center space-x-3 glass px-3 py-2 rounded-full hover:bg-white/10 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary-500"
           >
             <div
-              class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white font-semibold"
+              class="w-9 h-9 rounded-full overflow-hidden shadow-lg border-2 border-primary-500/50"
             >
-              {{ current_user.name[0].upper() }}
+              {% if current_user.profile_photo %}
+              <img
+                src="{{ url_for('static', filename='uploads/' + current_user.profile_photo) }}"
+                alt="Profile"
+                class="w-full h-full object-cover"
+              />
+              {% else %}
+              <div
+                class="w-full h-full bg-gradient-to-br from-primary-500 to-accent-500 flex items-center justify-center text-white font-bold text-sm"
+              >
+                {{ current_user.name[0].upper() }}
+              </div>
+              {% endif %}
             </div>
-            <span
-              class="material-icons-round text-sm text-gray-600 dark:text-gray-300"
+            <span class="material-icons-round text-sm text-gray-300"
               >expand_more</span
             >
           </button>
 
           <div
             id="profileDropdown"
-            class="absolute right-0 mt-2 w-48 bg-white dark:bg-dark-700 rounded-md shadow-lg py-1 hidden border border-gray-200 dark:border-dark-600 z-50"
+            class="absolute right-0 mt-3 w-56 glass rounded-2xl shadow-2xl py-2 hidden border border-gray-700/50 z-50"
           >
+            <div class="px-4 pb-3 mb-2 border-b border-gray-700/30">
+              <p class="font-semibold text-white">{{ current_user.name }}</p>
+              <p class="text-xs text-gray-400">{{ current_user.email }}</p>
+            </div>
+
             <a
               href="{{ url_for('edit_profile') }}"
-              class="block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-dark-600 flex items-center space-x-2 {{ 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-dark-600' if request.endpoint == 'edit_profile' else 'text-gray-700 dark:text-gray-300' }}"
+              class="px-4 py-2.5 hover:bg-white/5 flex items-center space-x-3 transition-colors {{ 'bg-primary-500/10 text-primary-300' if request.endpoint == 'edit_profile' else 'text-gray-300' }}"
             >
-              <span class="material-icons-round text-sm">edit</span>
-              <span>Edit Profil</span>
+              <span class="material-icons-round text-lg">edit</span>
+              <span class="font-medium">Edit Profil</span>
             </a>
             <a
               href="{{ url_for('my_photos') }}"
-              class="block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-dark-600 flex items-center space-x-2 md:hidden {{ 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-dark-600' if request.endpoint in ['my_photos', 'edit_photo'] else 'text-gray-700 dark:text-gray-300' }}"
+              class="px-4 py-2.5 hover:bg-white/5 flex items-center space-x-3 transition-colors md:hidden {{ 'bg-primary-500/10 text-primary-300' if request.endpoint in ['my_photos', 'edit_photo'] else 'text-gray-300' }}"
             >
-              <span class="material-icons-round text-sm">photo_library</span>
-              <span>Foto Saya</span>
+              <span class="material-icons-round text-lg">photo_library</span>
+              <span class="font-medium">Foto Saya</span>
             </a>
-            <hr class="my-1 border-gray-200 dark:border-dark-600" />
+            <div class="border-t border-gray-700/30 my-2"></div>
             <a
               href="{{ url_for('logout') }}"
-              class="block px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center space-x-2"
+              class="px-4 py-2.5 text-red-400 hover:bg-red-500/10 flex items-center space-x-3 transition-colors"
             >
-              <span class="material-icons-round text-sm">logout</span>
-              <span>Logout</span>
+              <span class="material-icons-round text-lg">logout</span>
+              <span class="font-medium">Logout</span>
             </a>
           </div>
         </div>
         {% else %}
-        <!-- Login - Active jika di login -->
+        <!-- Auth Buttons -->
         <a
           href="{{ url_for('login') }}"
-          class="font-medium {{ 'text-blue-600 dark:text-blue-400' if request.endpoint == 'login' else 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white' }}"
+          class="hidden sm:block font-medium text-gray-300 hover:text-white transition-colors px-4 py-2 {{ 'text-primary-300' if request.endpoint == 'login' else '' }}"
         >
           Sign In
         </a>
-        <!-- Register - Active jika di register -->
         <a
           href="{{ url_for('register') }}"
-          class="bg-blue-600 text-white px-5 py-2.5 rounded-full hover:bg-blue-700 font-medium transition {{ 'ring-2 ring-blue-300 ring-offset-2 dark:ring-offset-dark-800' if request.endpoint == 'register' else '' }}"
+          class="relative bg-gradient-to-r from-primary-600 to-primary-700 text-white px-6 py-2.5 rounded-full font-semibold hover:from-primary-500 hover:to-primary-600 transition-all duration-300 shadow-lg shadow-primary-500/30 hover:shadow-primary-500/50 {{ 'ring-2 ring-primary-300 ring-offset-2 ring-offset-dark-950' if request.endpoint == 'register' else '' }}"
         >
-          Register
+          <span class="flex items-center space-x-2">
+            <span class="material-icons-round text-lg">person_add</span>
+            <span>Register</span>
+          </span>
         </a>
         {% endif %}
       </div>
@@ -126,44 +146,6 @@
 </nav>
 
 <script>
-  // Dark Mode Toggle
-  function toggleDarkMode() {
-    const html = document.documentElement;
-    const icon = document.getElementById("darkModeIcon");
-
-    if (html.classList.contains("dark")) {
-      html.classList.remove("dark");
-      html.classList.add("light");
-      icon.textContent = "dark_mode";
-      localStorage.setItem("theme", "light");
-    } else {
-      html.classList.remove("light");
-      html.classList.add("dark");
-      icon.textContent = "light_mode";
-      localStorage.setItem("theme", "dark");
-    }
-  }
-
-  // Initialize Dark Mode from localStorage or system preference
-  (function () {
-    const html = document.documentElement;
-    const icon = document.getElementById("darkModeIcon");
-    const savedTheme = localStorage.getItem("theme");
-
-    if (
-      savedTheme === "dark" ||
-      (!savedTheme && window.matchMedia("(prefers-color-scheme: dark)").matches)
-    ) {
-      html.classList.remove("light");
-      html.classList.add("dark");
-      if (icon) icon.textContent = "light_mode";
-    } else {
-      html.classList.remove("dark");
-      html.classList.add("light");
-      if (icon) icon.textContent = "dark_mode";
-    }
-  })();
-
   // Profile Dropdown Toggle
   function toggleDropdown() {
     const dropdown = document.getElementById("profileDropdown");
@@ -180,7 +162,6 @@
   });
 
   // Smooth Navigation Handler
-  // Intercept internal links dan tambahkan smooth transition
   document.addEventListener("DOMContentLoaded", function () {
     const internalLinks = document.querySelectorAll('a[href^="/"]');
 
@@ -188,12 +169,10 @@
       link.addEventListener("click", function (e) {
         const href = this.getAttribute("href");
 
-        // Skip jika link punya modifier keys atau target blank
         if (e.ctrlKey || e.metaKey || e.shiftKey || this.target === "_blank") {
           return;
         }
 
-        // Skip jika href khusus
         if (
           href === "#" ||
           href.startsWith("javascript:") ||
@@ -202,12 +181,10 @@
           return;
         }
 
-        // Tambahkan smooth fade-out effect sebelum navigate
         const body = document.body;
         body.style.transition = "opacity 0.2s ease";
         body.style.opacity = "0.7";
 
-        // Delay sedikit untuk effect visual
         setTimeout(() => {
           window.location.href = href;
         }, 150);
@@ -216,7 +193,6 @@
       });
     });
 
-    // Scroll to top saat halaman baru load
     window.scrollTo({
       top: 0,
       behavior: "instant",

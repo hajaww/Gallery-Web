@@ -1,7 +1,6 @@
 {% extends "base.html" %} {% block title %}Upload Foto - Lensa{% endblock %} {%
 block extra_css %}
 <style>
-  /* Fade-in animation untuk form */
   @keyframes fadeInScale {
     from {
       opacity: 0;
@@ -13,204 +12,245 @@ block extra_css %}
     }
   }
 
-  .shadow-xl,
-  .rounded-2xl {
-    animation: fadeInScale 0.4s ease-out backwards;
+  .upload-card {
+    animation: fadeInScale 0.6s ease-out;
   }
 
-  /* Smooth transitions untuk inputs */
-  input,
-  textarea {
+  /* Enhanced dropzone */
+  .dropzone {
+    background: linear-gradient(
+      135deg,
+      rgba(30, 41, 59, 0.5),
+      rgba(30, 41, 59, 0.3)
+    );
+    border: 2px dashed rgba(147, 51, 234, 0.3);
     transition: all 0.3s ease;
+  }
+
+  .dropzone:hover,
+  .dropzone.dragover {
+    border-color: rgba(147, 51, 234, 0.6);
+    background: linear-gradient(
+      135deg,
+      rgba(147, 51, 234, 0.1),
+      rgba(147, 51, 234, 0.05)
+    );
+    transform: scale(1.02);
+  }
+
+  input:focus,
+  textarea:focus {
+    box-shadow: 0 0 0 3px rgba(147, 51, 234, 0.1);
   }
 </style>
 {% endblock %} {% block content %}
-<div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-  <div class="bg-white dark:bg-dark-800 rounded-2xl shadow-xl p-8">
-    <div class="text-center mb-8">
-      <h1 class="text-2xl font-bold text-gray-800 dark:text-white mb-2">
-        {% if photo %}Edit Foto{% else %}Upload Foto Baru{% endif %}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+  <div class="upload-card">
+    <!-- Header -->
+    <div class="text-center mb-10">
+      <div class="inline-flex items-center justify-center mb-6">
+        <div class="relative">
+          <div
+            class="absolute inset-0 bg-primary-500 blur-3xl opacity-30"
+          ></div>
+          <span class="relative material-icons-round text-6xl text-gradient">
+            {% if photo %}edit{% else %}cloud_upload{% endif %}
+          </span>
+        </div>
+      </div>
+      <h1 class="text-4xl font-black text-white mb-3">
+        {% if photo %}Edit Foto{% else %}Upload Foto{% endif %}
       </h1>
-      <p class="text-gray-500 dark:text-gray-400">
-        Bagikan visi visual Anda dengan dunia
+      <p class="text-gray-400 text-lg">
+        {% if photo %}Update detail foto Anda{% else %}Bagikan visi visual Anda
+        dengan dunia{% endif %}
       </p>
     </div>
 
-    <form
-      method="POST"
-      action="{{ url_for('edit_photo', photo_id=photo.id) if photo else url_for('upload') }}"
-      enctype="multipart/form-data"
-      class="space-y-6"
-    >
-      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-
-      <!-- Upload Area -->
-      <div
-        class="border-2 border-dashed border-gray-300 dark:border-dark-600 rounded-xl p-8 text-center hover:border-blue-500 transition-colors"
-        id="dropZone"
+    <div class="glass rounded-2xl p-8 border border-gray-700/30">
+      <form
+        method="POST"
+        action="{{ url_for('edit_photo', photo_id=photo.id) if photo else url_for('upload') }}"
+        enctype="multipart/form-data"
+        class="space-y-6"
       >
-        <input
-          type="file"
-          name="photo"
-          id="photoInput"
-          accept=".jpg,.jpeg,.png,.webp"
-          class="hidden"
-          {%
-          if
-          not
-          photo
-          %}required{%
-          endif
-          %}
-          onchange="previewImage(this)"
-        />
-        <label for="photoInput" class="cursor-pointer">
-          <span
-            class="material-icons-round text-5xl text-gray-400 dark:text-gray-500 mb-4"
-            >cloud_upload</span
-          >
-          <p class="text-gray-700 dark:text-gray-300 font-medium mb-2">
-            Drag & drop foto atau klik untuk browse
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+
+        <!-- Upload Area -->
+        <div
+          class="dropzone rounded-2xl p-10 text-center cursor-pointer"
+          id="dropZone"
+          onclick="document.getElementById('photoInput').click()"
+        >
+          <input
+            type="file"
+            name="photo"
+            id="photoInput"
+            accept=".jpg,.jpeg,.png,.webp"
+            class="hidden"
+            {%
+            if
+            not
+            photo
+            %}required{%
+            endif
+            %}
+            onchange="previewImage(this)"
+          />
+
+          <div class="relative mb-6">
+            <div
+              class="absolute inset-0 bg-primary-500 blur-2xl opacity-20 animate-pulse"
+            ></div>
+            <span class="relative material-icons-round text-7xl text-gray-400"
+              >{% if photo %}swap_horiz{% else %}cloud_upload{% endif %}</span
+            >
+          </div>
+
+          <p class="text-xl font-bold text-white mb-2">
+            {% if photo %}Klik untuk ganti foto{% else %}Drag & drop foto atau
+            klik untuk browse{% endif %}
           </p>
-          <p class="text-gray-500 dark:text-gray-400 text-sm">
+          <p class="text-gray-400 text-sm mb-4">
             Supported: .jpg, .png, .webp (Max 16MB)
           </p>
-        </label>
 
-        <!-- Error Message Container -->
-        <div
-          id="fileError"
-          class="hidden mt-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-300 dark:border-red-800 rounded-lg"
-        >
-          <div class="flex items-center space-x-2">
-            <span
-              class="material-icons-round text-red-600 dark:text-red-400 text-sm"
-              >error</span
-            >
-            <p
-              id="fileErrorText"
-              class="text-red-600 dark:text-red-400 text-sm font-medium"
-            ></p>
+          <!-- Error Message -->
+          <div
+            id="fileError"
+            class="hidden mt-4 p-4 bg-red-500/10 border border-red-500/30 rounded-xl"
+          >
+            <div class="flex items-center space-x-3">
+              <span class="material-icons-round text-red-400 text-xl"
+                >error</span
+              >
+              <p
+                id="fileErrorText"
+                class="text-red-300 text-sm font-medium"
+              ></p>
+            </div>
           </div>
+
+          <!-- Current Photo (Edit Mode) -->
+          {% if photo %}
+          <div class="mt-6">
+            <img
+              src="{{ url_for('static', filename='uploads/' + photo.image_file) }}"
+              alt="Current Photo"
+              class="max-h-56 mx-auto rounded-xl shadow-2xl border-2 border-gray-700/30"
+            />
+          </div>
+          {% else %}
+          <!-- Image Preview -->
+          <div id="imagePreview" class="hidden mt-6">
+            <img
+              id="previewImg"
+              src=""
+              alt="Preview"
+              class="max-h-56 mx-auto rounded-xl shadow-2xl border-2 border-gray-700/30"
+            />
+            <button
+              type="button"
+              onclick="
+                event.stopPropagation();
+                clearPreview();
+              "
+              class="mt-4 px-4 py-2 bg-red-500/10 border border-red-500/30 text-red-400 rounded-lg hover:bg-red-500/20 transition-colors inline-flex items-center gap-2"
+            >
+              <span class="material-icons-round text-sm">delete</span>
+              Hapus
+            </button>
+          </div>
+          {% endif %}
         </div>
 
-        {% if photo %}
-        <div class="mt-4">
-          <img
-            src="{{ url_for('static', filename='uploads/' + photo.image_file) }}"
-            alt="Current Photo"
-            class="max-h-48 mx-auto rounded-lg shadow-md"
+        <!-- Title -->
+        <div>
+          <label class="block text-sm font-semibold text-gray-300 mb-3">
+            Judul Foto <span class="text-red-400">*</span>
+          </label>
+          <input
+            type="text"
+            name="title"
+            required
+            class="w-full px-5 py-4 glass border border-gray-600/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-white placeholder-gray-500 transition-all"
+            placeholder="Contoh: Sunset di Pantai"
+            value="{{ photo.title if photo else request.form.get('title', '') }}"
           />
-          <p class="text-sm text-gray-500 dark:text-gray-400 mt-2">
-            Klik untuk ganti foto
+        </div>
+
+        <!-- Description -->
+        <div>
+          <label class="block text-sm font-semibold text-gray-300 mb-3">
+            Deskripsi <span class="text-gray-500 font-normal">(Opsional)</span>
+          </label>
+          <textarea
+            name="description"
+            rows="5"
+            class="w-full px-5 py-4 glass border border-gray-600/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-white placeholder-gray-500 transition-all resize-none"
+            placeholder="Ceritakan tentang foto ini, lokasi, momen spesial..."
+          >
+{{ photo.description if photo else request.form.get('description', '') }}</textarea
+          >
+          <p class="text-xs text-gray-500 mt-2 flex items-center gap-1">
+            <span class="material-icons-round text-xs">info</span>
+            Deskripsi membantu orang lain memahami konteks foto Anda
           </p>
         </div>
-        {% else %}
-        <div id="imagePreview" class="hidden mt-4">
-          <img
-            id="previewImg"
-            src=""
-            alt="Preview"
-            class="max-h-48 mx-auto rounded-lg shadow-md"
-          />
-          <button
-            type="button"
-            onclick="clearPreview()"
-            class="mt-2 text-red-600 text-sm hover:underline"
+
+        <!-- Action Buttons -->
+        <div class="flex space-x-4 pt-4">
+          <a
+            href="{{ url_for('my_photos') }}"
+            class="flex-1 px-6 py-4 glass border border-gray-600/30 text-gray-300 rounded-xl font-semibold hover:bg-white/5 hover:border-gray-500/50 text-center transition-all flex items-center justify-center gap-2"
           >
-            <span class="material-icons-round text-sm">close</span> Hapus
+            <span class="material-icons-round">arrow_back</span>
+            Batal
+          </a>
+          <button
+            type="submit"
+            class="flex-1 px-6 py-4 bg-gradient-to-r from-primary-600 to-primary-700 text-white rounded-xl font-semibold hover:from-primary-500 hover:to-primary-600 transition-all shadow-lg shadow-primary-500/30 hover:shadow-primary-500/50 flex items-center justify-center gap-2 btn-glow"
+          >
+            <span class="material-icons-round"
+              >{% if photo %}update{% else %}cloud_upload{% endif %}</span
+            >
+            {{ 'Update Foto' if photo else 'Upload Foto' }}
           </button>
         </div>
-        {% endif %}
-      </div>
-
-      <div>
-        <label
-          class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-          >Judul Foto</label
-        >
-        <input
-          type="text"
-          name="title"
-          required
-          class="w-full px-4 py-3 border border-gray-300 dark:border-dark-600 bg-white dark:bg-dark-700 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          placeholder="Contoh: Sunset di Pantai"
-          value="{{ photo.title if photo else request.form.get('title', '') }}"
-        />
-      </div>
-
-      <div>
-        <label
-          class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-          >Deskripsi</label
-        >
-        <textarea
-          name="description"
-          rows="4"
-          class="w-full px-4 py-3 border border-gray-300 dark:border-dark-600 bg-white dark:bg-dark-700 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          placeholder="Ceritakan tentang foto ini..."
-        >
-{{ photo.description if photo else request.form.get('description', '') }}</textarea
-        >
-      </div>
-
-      <div class="flex space-x-4">
-        <a
-          href="{{ url_for('my_photos') }}"
-          class="flex-1 px-6 py-3 border border-gray-300 dark:border-dark-600 text-gray-700 dark:text-gray-300 rounded-lg font-semibold hover:bg-gray-50 dark:hover:bg-dark-700 text-center"
-        >
-          Batal
-        </a>
-        <button
-          type="submit"
-          class="flex-1 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg font-semibold hover:from-blue-700 hover:to-blue-800"
-        >
-          {{ 'Update Foto' if photo else 'Upload Foto' }}
-        </button>
-      </div>
-    </form>
+      </form>
+    </div>
   </div>
 </div>
 {% endblock %} {% block extra_js %}
 <script>
-  // Konstanta batas ukuran file (16MB)
-  const MAX_FILE_SIZE = 16 * 1024 * 1024; // 16MB dalam bytes
+  const MAX_FILE_SIZE = 16 * 1024 * 1024;
   const MAX_FILE_SIZE_MB = 16;
 
-  // Format ukuran file ke MB
   function formatFileSize(bytes) {
     return (bytes / (1024 * 1024)).toFixed(2) + " MB";
   }
 
-  // Tampilkan error
   function showFileError(message) {
     const errorDiv = document.getElementById("fileError");
     const errorText = document.getElementById("fileErrorText");
     errorText.textContent = message;
     errorDiv.classList.remove("hidden");
 
-    // Auto hide setelah 5 detik
     setTimeout(() => {
       errorDiv.classList.add("hidden");
     }, 5000);
   }
 
-  // Sembunyikan error
   function hideFileError() {
     const errorDiv = document.getElementById("fileError");
     errorDiv.classList.add("hidden");
   }
 
-  // Validasi file
   function validateFile(file) {
-    // Reset error
     hideFileError();
 
-    if (!file) {
-      return false;
-    }
+    if (!file) return false;
 
-    // Cek ukuran file
     if (file.size > MAX_FILE_SIZE) {
       showFileError(
         `Ukuran file terlalu besar! Maksimal ${MAX_FILE_SIZE_MB}MB. Ukuran file Anda: ${formatFileSize(file.size)}`,
@@ -218,7 +258,6 @@ block extra_css %}
       return false;
     }
 
-    // Cek ekstensi file
     const allowedExtensions = ["jpg", "jpeg", "png", "webp"];
     const fileExtension = file.name.split(".").pop().toLowerCase();
 
@@ -229,7 +268,6 @@ block extra_css %}
       return false;
     }
 
-    // Cek apakah file kosong
     if (file.size === 0) {
       showFileError("File kosong atau rusak!");
       return false;
@@ -239,15 +277,12 @@ block extra_css %}
   }
 
   function previewImage(input) {
-    // Reset error
     hideFileError();
 
     if (input.files && input.files[0]) {
       const file = input.files[0];
 
-      // Validasi file sebelum preview
       if (!validateFile(file)) {
-        // Clear input jika validasi gagal
         input.value = "";
         return;
       }
@@ -267,13 +302,11 @@ block extra_css %}
     hideFileError();
   }
 
-  // Validasi saat form submit
   document.addEventListener("DOMContentLoaded", function () {
     const form = document.querySelector("form");
     const photoInput = document.getElementById("photoInput");
 
     form.addEventListener("submit", function (e) {
-      // Hanya validasi jika ada file yang dipilih (untuk upload baru)
       if (photoInput.files && photoInput.files[0]) {
         if (!validateFile(photoInput.files[0])) {
           e.preventDefault();
@@ -282,7 +315,7 @@ block extra_css %}
       }
     });
 
-    // Drag and drop support
+    // Drag and drop
     const dropZone = document.getElementById("dropZone");
 
     ["dragenter", "dragover", "dragleave", "drop"].forEach((eventName) => {
@@ -296,21 +329,13 @@ block extra_css %}
 
     ["dragenter", "dragover"].forEach((eventName) => {
       dropZone.addEventListener(eventName, () => {
-        dropZone.classList.add(
-          "border-blue-500",
-          "bg-blue-50",
-          "dark:bg-blue-900/10",
-        );
+        dropZone.classList.add("dragover");
       });
     });
 
     ["dragleave", "drop"].forEach((eventName) => {
       dropZone.addEventListener(eventName, () => {
-        dropZone.classList.remove(
-          "border-blue-500",
-          "bg-blue-50",
-          "dark:bg-blue-900/10",
-        );
+        dropZone.classList.remove("dragover");
       });
     });
 

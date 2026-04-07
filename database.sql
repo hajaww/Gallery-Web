@@ -13,6 +13,7 @@ CREATE TABLE
         name VARCHAR(100) NOT NULL,
         email VARCHAR(120) UNIQUE NOT NULL,
         password VARCHAR(255) NOT NULL,
+        profile_photo VARCHAR(255) DEFAULT NULL,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         INDEX idx_email (email),
         INDEX idx_created_at (created_at)
