@@ -107,7 +107,6 @@
 - ✅ Error handling & logging
 
 ### 🎨 UI/UX
-- ✅ Dark mode dengan custom color palette
 - ✅ Glassmorphism design
 - ✅ Responsive layout (mobile-friendly)
 - ✅ Smooth animations & transitions
