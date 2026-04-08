@@ -24,7 +24,6 @@
 - [Running the Application](#-running-the-application)
 - [Database Migration](#-database-migration)
 - [API Routes](#-api-routes)
-- [Screenshots](#-screenshots)
 - [Author](#-author)
 
 ---
@@ -348,16 +347,6 @@ Like
 ├── photo_id (Integer, FK -> Photo.id)
 └── user, photo (Relationships)
 ```
-
----
-
-## 📸 Screenshots
-
-> Tambahkan screenshots aplikasi di bagian ini untuk dokumentasi visual.
-
-| Home | Upload | My Photos |
-|------|--------|-----------|
-| *[Screenshot]* | *[Screenshot]* | *[Screenshot]* |
 
 ---
 
