@@ -70,19 +70,11 @@
             <div
               class="w-9 h-9 rounded-full overflow-hidden shadow-lg border-2 border-primary-500/50"
             >
-              {% if current_user.profile_photo %}
-              <img
-                src="{{ url_for('static', filename='uploads/' + current_user.profile_photo) }}"
-                alt="Profile"
-                class="w-full h-full object-cover"
-              />
-              {% else %}
               <div
                 class="w-full h-full bg-gradient-to-br from-primary-500 to-accent-500 flex items-center justify-center text-white font-bold text-sm"
               >
                 {{ current_user.name[0].upper() }}
               </div>
-              {% endif %}
             </div>
             <span class="material-icons-round text-sm text-gray-300"
               >expand_more</span
